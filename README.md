@@ -28,5 +28,5 @@ RoomJam is a real time collaboration workspace where users can join shared rooms
 
 ## Storage and Authentication
 
-- SupaBase
+- PostgreSQL
 - JWT Authentication
