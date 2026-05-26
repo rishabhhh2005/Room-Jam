@@ -1,6 +1,8 @@
 function RoomWorkspaceLayout({
   roomId,
   participants,
+  activeTab,
+  setActiveTab,
   children,
 }) {
   return (
@@ -51,26 +53,40 @@ function RoomWorkspaceLayout({
           </div>
 
           <div className="p-5 space-y-3">
-            <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
-              Code Editor
-            </button>
+  <button
+    onClick={() => setActiveTab("editor")}
+    className={`w-full text-left px-4 py-3 rounded ${
+      activeTab === "editor"
+        ? "bg-blue-600"
+        : "bg-zinc-800 hover:bg-zinc-700"
+    }`}
+  >
+    Code Editor
+  </button>
 
-            <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
-              Whiteboard
-            </button>
+  <button
+    onClick={() => setActiveTab("whiteboard")}
+    className={`w-full text-left px-4 py-3 rounded ${
+      activeTab === "whiteboard"
+        ? "bg-blue-600"
+        : "bg-zinc-800 hover:bg-zinc-700"
+    }`}
+  >
+    Whiteboard
+  </button>
 
-            <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
-              Notes
-            </button>
+  <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
+    Notes
+  </button>
 
-            <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
-              Chat
-            </button>
-          </div>
+  <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
+    Chat
+  </button>
+</div>
         </aside>
 
         {/* Main Workspace */}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden min-h-0">
           {children}
         </main>
       </div>
