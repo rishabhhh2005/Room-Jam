@@ -75,9 +75,16 @@ function RoomWorkspaceLayout({
     Whiteboard
   </button>
 
-  <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
-    Notes
-  </button>
+ <button
+  onClick={() => setActiveTab("notes")}
+  className={`w-full text-left px-4 py-3 rounded ${
+    activeTab === "notes"
+      ? "bg-blue-600"
+      : "bg-zinc-800 hover:bg-zinc-700"
+  }`}
+>
+  Notes
+</button>
 
   <button className="w-full text-left px-4 py-3 rounded bg-zinc-800 hover:bg-zinc-700">
     Chat

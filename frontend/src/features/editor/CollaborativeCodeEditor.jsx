@@ -4,6 +4,7 @@ import { useCollaborativeEditor } from "./useCollaborativeEditor";
 import { useRoomPresence } from "../presence/useRoomPresence";
 import RoomWorkspaceLayout from "../room/RoomWorkspaceLayout";
 import CollaborativeWhiteboard from "../whiteboard/CollaborativeWhiteboard";
+import CollaborativeNotes from "../notes/CollaborativeNotes";
 
 function CollaborativeCodeEditor({ roomKey }) {
   const [editor, setEditor] = useState(null);
@@ -25,21 +26,19 @@ function CollaborativeCodeEditor({ roomKey }) {
       activeTab={activeTab}
       setActiveTab={setActiveTab}
     >
-      {activeTab === "editor" ? (
-        <div className="flex-1 h-full min-h-0">
-          <Editor
-            height="100%"
-            language="javascript"
-            defaultValue="// RoomJam collaborative editor"
-            theme="vs-dark"
-            onMount={setEditor}
-          />
-        </div>
-      ) : (
-        <div style={{ flex: 1, width: "100%", height: "100%", minHeight: 0 }}>
-          <CollaborativeWhiteboard roomKey={roomKey} />
-        </div>
-      )}
+     {activeTab === "editor" ? (
+  <Editor
+    height="100%"
+    language="javascript"
+    defaultValue="// RoomJam collaborative editor"
+    theme="vs-dark"
+    onMount={setEditor}
+  />
+) : activeTab === "whiteboard" ? (
+  <CollaborativeWhiteboard roomKey={roomKey} />
+) : activeTab === "notes" ? (
+  <CollaborativeNotes roomKey={roomKey} />
+) : null}
     </RoomWorkspaceLayout>
   );
 }
