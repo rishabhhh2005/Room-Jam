@@ -11,9 +11,35 @@ from app.services.room_service import (
     create_room,
     join_room,
     get_room_by_key,
+    get_user_rooms,
+    delete_room,
 )
 
 router = APIRouter()
+
+
+@router.delete("/rooms/{room_key}")
+def remove_room(
+    room_key: str,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    try:
+        delete_room(db, user, room_key)
+        return {"detail": "Room deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=403,
+            detail=str(e),
+        )
+
+
+@router.get("/rooms", response_model=list[RoomResponse])
+def list_rooms(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    return get_user_rooms(db, user)
 
 
 @router.post("/rooms", response_model=RoomResponse)
@@ -26,16 +52,13 @@ def create_new_room(
         db,
         user,
         data.title,
+        data.problem_statement,
         data.is_public,
+        data.context,
+        data.tags,
     )
 
-    return {
-        "id": str(room.id),
-        "title": room.title,
-        "room_key": room.room_key,
-        "owner_id": str(room.owner_id),
-        "is_public": room.is_public,
-    }
+    return room
 
 
 @router.post("/rooms/join", response_model=RoomResponse)
@@ -46,14 +69,7 @@ def join_existing_room(
 ):
     try:
         room = join_room(db, user, data.room_key)
-
-        return {
-            "id": str(room.id),
-            "title": room.title,
-            "room_key": room.room_key,
-            "owner_id": str(room.owner_id),
-            "is_public": room.is_public,
-        }
+        return room
 
     except ValueError as e:
         raise HTTPException(
@@ -76,10 +92,4 @@ def get_room(
             detail="Room not found",
         )
 
-    return {
-        "id": str(room.id),
-        "title": room.title,
-        "room_key": room.room_key,
-        "owner_id": str(room.owner_id),
-        "is_public": room.is_public,
-    }
+    return room

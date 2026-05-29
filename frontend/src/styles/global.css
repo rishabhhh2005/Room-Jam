@@ -3,10 +3,11 @@
 html, body, #root {
   height: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 
 body {
-  background: #0f172a;
+  background: #0a0a0a;
   color: white;
   font-family: Inter, sans-serif;
 }
