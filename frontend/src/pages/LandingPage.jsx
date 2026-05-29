@@ -1,55 +1,33 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * LandingPage Component
- * 
- * The public-facing marketing page for RoomJam.
- */
 const LandingPage = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-
-  const handleGetStarted = () => {
-    if (token) {
-      navigate('/dashboard');
-    } else {
-      navigate('/register');
-    }
-  };
+  const onGetStarted = () => navigate(token ? '/dashboard' : '/register');
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 selection:bg-indigo-500/30 font-sans overflow-y-auto">
-      {/* Background Gradients */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[25%] -left-[10%] w-[70%] h-[70%] bg-indigo-500/10 rounded-full blur-[120px] opacity-50" />
-        <div className="absolute top-[10%] -right-[5%] w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[120px] opacity-30" />
-      </div>
+    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-y-auto">
 
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <span className="font-bold text-white text-lg">R</span>
-            </div>
-            <span className="text-xl font-semibold tracking-tight text-white">RoomJam</span>
-          </div>
-          
+      {/* Subtle grid texture */}
+      <div className="fixed inset-0 pointer-events-none"
+        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px)', backgroundSize: '72px 72px' }} />
+
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <span className="text-sm font-bold tracking-widest text-white uppercase">RoomJam</span>
           <div className="flex items-center gap-6">
             {token ? (
-              <button 
-                onClick={() => navigate('/dashboard')}
-                className="px-5 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all"
-              >
-                Go to Dashboard
+              <button onClick={() => navigate('/dashboard')} className="text-xs tracking-widest uppercase text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-colors">
+                Dashboard
               </button>
             ) : (
               <>
-                <button onClick={() => navigate('/login')} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Sign In</button>
-                <button 
-                  onClick={handleGetStarted}
-                  className="px-5 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all"
-                >
+                <button onClick={() => navigate('/login')} className="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors">
+                  Sign In
+                </button>
+                <button onClick={onGetStarted} className="text-xs tracking-widest uppercase text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-colors">
                   Get Started
                 </button>
               </>
@@ -58,144 +36,69 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      <main className="relative z-10 container mx-auto px-6 pt-40 pb-24">
-        <div className="max-w-4xl mx-auto text-center mb-32">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-            </span>
-            Now in Public Beta
+      <main className="relative z-10 max-w-6xl mx-auto px-6">
+
+        {/* Hero */}
+        <section className="pt-48 pb-40 border-b border-white/[0.06]">
+          <div className="max-w-3xl">
+            <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-10">
+              Protoype  1 — By Rishabh
+            </p>
+            <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-white mb-8">
+              The room where<br />
+              <span className="text-zinc-600">problems are solved.</span>
+            </h1>
+            <p className="text-base text-zinc-500 leading-relaxed max-w-lg mb-12">
+              Bring your team into one room to design systems, plan projects, write code, and collaborate in real time.
+            </p>
+            <div className="flex items-center gap-4">
+              <button onClick={onGetStarted} className="text-xs tracking-widest uppercase bg-white text-black px-6 py-3 font-bold hover:bg-zinc-200 transition-colors">
+                Start Building →
+              </button>
+              <button onClick={() => navigate('/login')} className="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors px-6 py-3 border border-white/10 hover:border-white/30">
+                Live Demo
+              </button>
+            </div>
           </div>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-8">
-            Collaborative rooms <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">for developers.</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-zinc-400 leading-relaxed max-w-2xl mx-auto mb-12">
-            The all-in-one workspace for technical interviews, team brainstorming, and pair programming. 
-            Built for speed and deep focus.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <button 
-              onClick={handleGetStarted}
-              className="px-8 py-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg shadow-xl shadow-indigo-500/25 transition-all flex items-center gap-2"
-            >
-              Start Building <ArrowRightIcon className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => navigate('/login')}
-              className="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-lg border border-white/10 transition-all"
-            >
-              Live Demo
-            </button>
+        </section>
+
+            
+
+        {/* Why section */}
+        <section className="py-24 border-b border-white/[0.06]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+            <div>
+              <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-6">Why RoomJam</p>
+              <h2 className="text-3xl font-bold text-white leading-snug">
+                Built around the problem, not the tool.
+              </h2>
+            </div>
+            <div className="space-y-8 pt-2">
+              {[
+                ['Problem-centric', 'Rooms are scoped to a problem — LeetCode, system design, or a team sprint. Context stays in the room.'],
+                ['Low-latency sync', 'Every keystroke and sketch syncs instantly via Yjs. No lag, no conflicts.'],
+              ].map(([title, body]) => (
+                <div key={title} className="border-t border-white/[0.06] pt-8">
+                  <h4 className="text-sm font-bold text-white mb-2">{title}</h4>
+                  <p className="text-sm text-zinc-600 leading-relaxed">{body}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-40">
-           <div className="group relative p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-indigo-500/30 transition-all overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <CodeIcon className="w-24 h-24 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Problem-Centric</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Rooms are built around specific problems. Whether it's a LeetCode challenge or a system design interview, RoomJam provides the context you need.
-              </p>
-           </div>
-           <div className="group relative p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-purple-500/30 transition-all overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <MessageSquareIcon className="w-24 h-24 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Real-time Sync</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Low-latency synchronization powered by Yjs. Every keystroke, mouse movement, and sketch is visible to everyone instantly.
-              </p>
-           </div>
-        </div>
+       
 
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Everything you need</h2>
-          <p className="text-zinc-500 text-lg">A complete toolset for modern engineering collaboration.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          <FeatureCard 
-            title="Realtime Editor" 
-            desc="Powerful collaborative code editor with syntax highlighting and shared cursor awareness."
-            icon={<CodeIcon className="w-6 h-6 text-indigo-400" />}
-          />
-          <FeatureCard 
-            title="Shared Whiteboard" 
-            desc="Sketch architecture and complex flows with Excalidraw integration built directly into the room."
-            icon={<PenIcon className="w-6 h-6 text-purple-400" />}
-          />
-          <FeatureCard 
-            title="Room Notes" 
-            desc="Markdown-ready notes for documenting decisions, technical requirements, and constraints."
-            icon={<FileTextIcon className="w-6 h-6 text-pink-400" />}
-          />
-          <FeatureCard 
-            title="Team Chat" 
-            desc="Contextual messaging to keep the team aligned without leaving the workspace."
-            icon={<MessageSquareIcon className="w-6 h-6 text-emerald-400" />}
-          />
-        </div>
       </main>
 
-      <footer className="border-t border-white/5 py-12 bg-black/40">
-        <div className="container mx-auto px-6 text-center">
-          <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-             <div className="w-6 h-6 bg-white/10 rounded flex items-center justify-center">
-               <span className="font-bold text-white text-xs">R</span>
-             </div>
-             <span className="text-sm font-semibold text-white">RoomJam</span>
-          </div>
-          <p className="text-zinc-500 text-sm">© 2026 RoomJam. Built for the modern collaborative developer.</p>
+      <footer className="border-t border-white/[0.06] py-8">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+          <span className="text-xs tracking-widest uppercase text-zinc-700">RoomJam</span>
+          <span className="text-xs text-zinc-800">© 2026</span>
         </div>
       </footer>
     </div>
   );
 };
-
-const FeatureCard = ({ title, desc, icon }) => (
-  <div className="p-8 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-all hover:-translate-y-1">
-    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-      {icon}
-    </div>
-    <h4 className="text-lg font-bold text-white mb-3">{title}</h4>
-    <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>
-  </div>
-);
-
-/* --- Icons --- */
-
-const ArrowRightIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-  </svg>
-);
-
-const CodeIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-  </svg>
-);
-
-const PenIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-  </svg>
-);
-
-const FileTextIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-  </svg>
-);
-
-const MessageSquareIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-  </svg>
-);
 
 export default LandingPage;

@@ -40,27 +40,61 @@ function RoomPage() {
 
   if (loading || joining) {
     return (
-      <div className="h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 animate-pulse flex items-center justify-center shadow-2xl shadow-indigo-500/20">
-            <span className="text-4xl font-bold">R</span>
+      <div className="h-screen bg-[#080808] flex flex-col items-center justify-center text-white font-mono relative overflow-hidden selection:bg-white selection:text-black">
+        {/* Grid Background */}
+        <div
+          className="fixed inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px)',
+            backgroundSize: '72px 72px',
+          }}
+        />
+
+        <div className="relative z-10 w-full max-w-sm border border-white/[0.06] bg-black/40 p-8 text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-zinc-900 animate-pulse">
+              <span className="text-xl font-bold tracking-tighter">R</span>
+            </div>
           </div>
-          <div className="absolute -inset-4 border-2 border-indigo-500/20 rounded-3xl animate-ping" />
-        </div>
-        
-        <div className="mt-12 text-center">
-          <h2 className="text-2xl font-bold tracking-tight mb-2">Joining Workspace</h2>
-          <div className="flex items-center justify-center gap-1.5">
-             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.3s]" />
-             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.15s]" />
-             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" />
+          
+          <div className="space-y-2">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-zinc-600">Initialization Sequence</p>
+            <h2 className="text-lg font-bold tracking-widest uppercase text-white">Joining Workspace</h2>
+            
+            {/* Terminal Style Static Loader Bar */}
+            <div className="w-32 mx-auto pt-2">
+              <div className="h-1 bg-white/[0.08] w-full overflow-hidden relative">
+                <div className="absolute top-0 bottom-0 bg-white w-1/3 animate-[loading_1.5s_infinite_ease-in-out]" 
+                     style={{
+                       animationName: 'loading',
+                       animationDuration: '1.5s',
+                       animationIterationCount: 'infinite',
+                       animationTimingFunction: 'ease-in-out'
+                     }} 
+                />
+              </div>
+            </div>
           </div>
-          <p className="text-zinc-500 text-sm mt-6 font-mono uppercase tracking-[0.2em]">{roomKey}</p>
+          
+          <div className="mt-8 pt-6 border-t border-white/[0.04]">
+            <p className="text-zinc-500 text-xs tracking-[0.25em] uppercase">Target Address</p>
+            <p className="text-white text-sm font-bold tracking-widest mt-1 uppercase">{roomKey}</p>
+          </div>
         </div>
 
-        <div className="fixed bottom-12 text-zinc-600 text-xs font-medium tracking-widest uppercase">
-          Establishing Secure Connection...
+        <div className="fixed bottom-12 text-zinc-600 text-[10px] tracking-[0.3em] uppercase z-10">
+          Syncing Environment Core Matrix...
         </div>
+
+        {/* Global style definition inline injection for minimalist custom ticker width translate */}
+        <style>{`
+          @keyframes loading {
+            0% { left: -35%; right: 100%; }
+            50% { left: 100%; right: -35%; }
+            100% { left: -35%; right: 100%; }
+          }
+        `}</style>
       </div>
     );
   }

@@ -66,81 +66,89 @@ function RoomWorkspaceLayout({
   const chatContent = React.Children.toArray(children).find(child => child.props.className?.includes('w-80'));
 
   return (
-    <div className="h-screen bg-[#0a0a0a] text-white flex flex-col font-sans overflow-hidden">
+    <div className="h-screen bg-[#080808] text-zinc-100 flex flex-col font-mono overflow-hidden relative selection:bg-white selection:text-black">
+      {/* Grid Background Overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.01) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}
+      />
+
       {/* Header */}
-      <header className="h-16 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl px-6 flex items-center justify-between relative z-50">
+      <header className="h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-6 flex items-center justify-between relative z-50 shrink-0">
         <div className="flex items-center gap-4 w-1/4">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <span className="font-bold text-white text-lg">R</span>
-            </div>
-            <span className="text-xl font-semibold tracking-tight text-white hidden md:block">RoomJam</span>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
+            <span className="text-sm font-bold tracking-widest uppercase text-white">RoomJam</span>
           </div>
-          <div className="h-4 w-px bg-white/10 mx-1 hidden md:block" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold leading-tight">Session</span>
-            <span className="text-xs font-mono text-indigo-400 font-bold tracking-tight">{roomId}</span>
+          <div className="h-4 w-px bg-white/[0.08] hidden md:block" />
+          <div className="hidden md:flex flex-col">
+            <span className="text-[10px] uppercase tracking-widest text-white/40">NODE_ID</span>
+            <span className="text-xs text-zinc-400 tracking-wider font-bold">{roomId}</span>
           </div>
         </div>
 
-        {/* Center: Tool Selection */}
-        <div className="flex-1 flex justify-center items-center gap-2">
+        {/* Center: Workspace Matrix Tool Selection */}
+        <div className="flex-1 flex justify-center items-center gap-1.5">
           <TabButton 
             active={activeTab === "editor"} 
             onClick={() => setActiveTab("editor")}
             icon={<CodeIcon />}
-            label="Editor"
+            label="EDITOR"
           />
           <TabButton 
             active={activeTab === "whiteboard"} 
             onClick={() => setActiveTab("whiteboard")}
             icon={<PenIcon />}
-            label="Whiteboard"
+            label="WHITEBOARD"
           />
           <TabButton 
             active={activeTab === "notes"} 
             onClick={() => setActiveTab("notes")}
             icon={<FileTextIcon />}
-            label="Notes"
+            label="NOTES"
           />
         </div>
 
         <div className="flex items-center justify-end gap-6 w-1/4">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Connected</span>
+          <div className="hidden lg:block text-[10px] font-bold text-emerald-400 tracking-widest uppercase border border-emerald-500/20 bg-emerald-500/[0.02] px-2.5 py-1">
+            [SYS_ONLINE]
           </div>
 
           <button 
             onClick={handleLeave}
-            className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold transition-all whitespace-nowrap"
+            className="px-4 py-1.5 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold"
           >
             Leave
           </button>
         </div>
       </header>
 
-      {/* Body */}
+      {/* Body Area Layout */}
       <div className="flex flex-1 overflow-hidden relative z-10">
-        {/* Left Sidebar: Problem & Participants */}
+        {/* Left Sidebar: Index Specs & Peers */}
         <aside 
           style={{ width: `${sidebarWidth}px` }}
-          className="border-r border-white/5 bg-[#0a0a0a] flex flex-col shrink-0 relative group/sidebar"
+          className="border-r border-white/[0.06] bg-[#080808]/40 backdrop-blur-sm flex flex-col shrink-0 relative group/sidebar"
         >
-          <div className="p-6 border-b border-white/5 overflow-hidden">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6 flex items-center gap-2">
-              <span className="w-4 h-[1px] bg-indigo-500"></span>
-              Problem Statement
+          {/* Section: Problem Metadata Specs */}
+          <div className="p-6 border-b border-white/[0.06] overflow-hidden bg-black/10">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
+              // SPECIFICATION_INDEX
             </h2>
             <div className="space-y-4">
-               <h3 className="font-bold text-white text-lg leading-tight">{roomData?.title || 'Loading...'}</h3>
-               <div className="max-h-60 overflow-y-auto custom-scrollbar pr-2 text-zinc-400 text-sm leading-relaxed whitespace-pre-wrap">
+               <h3 className="font-bold text-white text-md uppercase tracking-wide leading-tight">
+                 {roomData?.title || 'LOADING...'}
+               </h3>
+               <div className="max-h-52 overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap font-sans">
                   {roomData?.problem_statement || 'No problem statement provided.'}
                </div>
                {roomData?.tags && (
-                 <div className="flex flex-wrap gap-2 pt-2">
+                 <div className="flex flex-wrap gap-1.5 pt-2">
                     {roomData.tags.map(tag => (
-                      <span key={tag} className="text-[10px] text-zinc-500 bg-white/5 px-2 py-0.5 rounded uppercase tracking-wider border border-white/5">
+                      <span key={tag} className="text-[9px] text-zinc-400 bg-zinc-900 border border-white/[0.08] px-2 py-0.5 uppercase tracking-wider">
                         {tag}
                       </span>
                     ))}
@@ -149,60 +157,64 @@ function RoomWorkspaceLayout({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-6 flex items-center gap-2">
-              <span className="w-4 h-[1px] bg-indigo-500"></span>
-              Participants ({participants.length})
+          {/* Section: Peer Nodes Connection Stack */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
+              // PEER_NODES ({participants.length})
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {participants.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default group"
+                  className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-xs font-bold text-indigo-400 group-hover:scale-110 transition-transform">
+                  <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400">
                     {user.name[0].toUpperCase()}
                   </div>
-                  <span className="text-sm font-medium text-zinc-200 truncate">{user.name}</span>
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                  <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">{user.name}</span>
+                  <span className="ml-auto text-[9px] text-emerald-500/80 font-bold tracking-widest">[OK]</span>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="p-6 border-t border-white/5 bg-white/5">
-             <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Environment</span>
-                <span className="text-xs text-zinc-400 font-mono text-ellipsis overflow-hidden whitespace-nowrap">Production • {roomId}</span>
+          {/* Environment Status Flag Footer */}
+          <div className="p-4 border-t border-white/[0.06] bg-black/20">
+             <div className="flex flex-col gap-0.5">
+                <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Environment Pipeline</span>
+                <span className="text-[10px] text-zinc-400 text-ellipsis overflow-hidden whitespace-nowrap uppercase tracking-wider">PROD_ENV // {roomId}</span>
              </div>
           </div>
 
-          {/* Left Resizer Handle */}
+          {/* Drag Resizer Interactive Node */}
           <div 
             onMouseDown={startResizingLeft}
-            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-indigo-500/50 transition-colors z-50"
+            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-white/30 transition-colors z-50"
           />
         </aside>
 
-        {/* Main Workspace (Middle) */}
-        <main className="flex-1 flex overflow-hidden min-h-0 bg-zinc-950/50">
+        {/* Main Interface Core Area (Center & Right Sidebar Combo) */}
+        <main className="flex-1 flex overflow-hidden min-h-0 bg-[#0c0c0c]">
            <div className="flex-1 overflow-hidden min-w-0 h-full">
               {mainContent}
            </div>
 
-           {/* Right Resizer Handle */}
+           {/* Vertical Right Split Node Resizer Handle */}
            <div 
              onMouseDown={startResizingRight}
-             className="w-1 h-full cursor-col-resize hover:bg-indigo-500/50 transition-colors z-50 bg-white/5 shrink-0"
+             className="w-px h-full cursor-col-resize hover:bg-white/30 transition-colors z-50 bg-white/[0.06] shrink-0"
            />
 
-           {/* Right Sidebar: Chat */}
+           {/* Right Workspace Context Panel: Stream Channel Chat */}
            <div 
              style={{ width: `${rightSidebarWidth}px` }}
-             className="shrink-0 bg-[#0a0a0a] flex flex-col h-full overflow-hidden"
+             className="shrink-0 bg-[#080808] border-l border-white/[0.06] flex flex-col h-full overflow-hidden relative"
            >
-              {chatContent && React.cloneElement(chatContent, { style: { width: '100%', height: '100%' }, className: chatContent.props.className.replace('w-80', '') })}
+              {chatContent && React.cloneElement(chatContent, { 
+                style: { width: '100%', height: '100%' }, 
+                className: chatContent.props.className.replace('w-80', '') 
+              })}
            </div>
         </main>
       </div>
@@ -210,37 +222,41 @@ function RoomWorkspaceLayout({
   );
 }
 
+/* --- Modular Layout Components --- */
+
 const TabButton = ({ active, onClick, icon, label }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all group ${
+    className={`flex items-center gap-2 px-4 h-9 border text-xs font-bold tracking-widest uppercase transition-all ${
       active
-        ? "bg-white/10 text-white border border-white/10 shadow-lg"
-        : "text-zinc-500 hover:text-white hover:bg-white/5"
+        ? "bg-white text-black border-white"
+        : "text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.02]"
     }`}
   >
-    <span className={`${active ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400"} transition-colors`}>
+    <span className="transition-colors shrink-0">
       {icon}
     </span>
-    {label}
+    <span>{label}</span>
   </button>
 );
 
+/* --- Minimalist Vector Geometry Pack --- */
+
 const CodeIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
   </svg>
 );
 
 const PenIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
   </svg>
 );
 
 const FileTextIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
   </svg>
 );
 
