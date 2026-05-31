@@ -23,7 +23,7 @@ function CollaborativeCodeEditor({ roomKey, currentUser, roomData }) {
       setActiveTab={setActiveTab}
       roomData={roomData}
     >
-      <div className="flex-1 min-w-0 h-full">
+      <div className="flex-1 min-w-0 w-full h-full overflow-hidden relative">
         {activeTab === "editor" ? (
           <Editor
             height="100%"
@@ -47,7 +47,7 @@ function CollaborativeCodeEditor({ roomKey, currentUser, roomData }) {
         ) : null}
       </div>
 
-      <div className="w-80 h-full">
+      <div className="w-80 h-full shrink-0">
         <ChatPanel
           roomKey={roomKey}
           currentUser={currentUser}

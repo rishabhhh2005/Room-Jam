@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 
 const RegisterPage = () => {
@@ -27,6 +28,7 @@ const RegisterPage = () => {
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
+      toast.error('Passwords do not match.');
       return;
     }
 
@@ -43,22 +45,20 @@ const RegisterPage = () => {
       const response = await api.post('/auth/register', payload);
 
       localStorage.setItem('token', response.data.access_token);
-
+      toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (err) {
       console.error('Registration error:', err);
-
-      setError(
-        err.response?.data?.detail ||
-        'Failed to create account.'
-      );
+      const errorMessage = err.response?.data?.detail || 'Failed to create account.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-hidden relative">
+    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-y-auto lg:overflow-hidden relative">
 
       {/* Grid Background */}
       <div
@@ -91,14 +91,14 @@ const RegisterPage = () => {
         </div>
       </nav>
 
-      <main className="relative z-10 min-h-screen flex items-center px-6 pt-14">
+      <main className="relative z-10 min-h-screen flex items-center px-6 pt-24 pb-12 lg:pt-14">
 
         <div className="max-w-7xl mx-auto w-full">
 
-          <div className="grid lg:grid-cols-[460px_auto_1fr] gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[460px_auto_1fr] gap-12 lg:gap-20 items-center">
 
             {/* LEFT SIDE */}
-            <div>
+            <div className="order-2 lg:order-1">
 
               <div className="border border-white/[0.06] bg-black/20">
 
@@ -151,7 +151,7 @@ const RegisterPage = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                     <div>
                       <label className="block mb-3 text-[11px] uppercase tracking-[0.25em] text-zinc-600">
@@ -218,16 +218,16 @@ const RegisterPage = () => {
             </div>
 
             {/* Divider */}
-            <div className="hidden lg:block h-[600px] w-px bg-white/[0.06]" />
+            <div className="hidden lg:block h-[600px] w-px bg-white/[0.06] order-2" />
 
             {/* RIGHT SIDE */}
-            <div>
+            <div className="order-1 lg:order-3">
 
-              <p className="text-xs tracking-[0.35em] uppercase text-zinc-600 mb-10">
+              <p className="text-xs tracking-[0.35em] uppercase text-zinc-600 mb-6 lg:mb-10">
                 All rights reserved — RoomJam
               </p>
 
-              <h1 className="text-7xl xl:text-8xl font-bold leading-[0.92] tracking-tight text-white mb-8">
+              <h1 className="text-5xl md:text-7xl xl:text-8xl font-bold leading-[0.92] tracking-tight text-white mb-6 lg:mb-8">
                 Join
                 <br />
                 <span className="text-zinc-600">
@@ -235,20 +235,12 @@ const RegisterPage = () => {
                 </span>
               </h1>
 
-              <p className="text-lg text-zinc-500 leading-relaxed max-w-xl mb-12">
+              <p className="text-base lg:text-lg text-zinc-500 leading-relaxed max-w-xl mb-6 lg:mb-12">
                 Create your workspace and start
                 collaborating on  problems and
                 ideas with your
                 team in real time.
               </p>
-
-              <div className="grid grid-cols-2 gap-8 max-w-lg">
-
-                
-
-               
-
-              </div>
 
             </div>
 

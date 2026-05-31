@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 
 /**
@@ -39,19 +40,33 @@ const DashboardPage = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
+    toast.success('Logged out successfully');
   };
 
   const handleDeleteRoom = async (e, roomKey) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure you want to delete this room? This action cannot be undone.')) return;
     
-    try {
-      await api.delete(`/rooms/${roomKey}`);
-      setRooms(prev => prev.filter(r => r.room_key !== roomKey));
-    } catch (error) {
-      console.error("Error deleting room:", error);
-      alert(error.response?.data?.detail || 'Failed to delete room.');
-    }
+    toast.warning('Terminate Workspace?', {
+      description: 'This action will permanently destroy the room matrix. Are you sure?',
+      duration: Infinity,
+      action: {
+        label: 'Destroy',
+        onClick: async () => {
+          try {
+            await api.delete(`/rooms/${roomKey}`);
+            setRooms(prev => prev.filter(r => r.room_key !== roomKey));
+            toast.success('Workspace terminated');
+          } catch (error) {
+            console.error("Error deleting room:", error);
+            toast.error(error.response?.data?.detail || 'Failed to delete room.');
+          }
+        },
+      },
+      cancel: {
+        label: 'Abort',
+        onClick: () => toast.dismiss()
+      }
+    });
   };
 
   const sampleProblems = [

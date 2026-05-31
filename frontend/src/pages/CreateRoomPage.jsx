@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 
 const CreateRoomPage = () => {
@@ -49,10 +50,13 @@ const CreateRoomPage = () => {
       };
 
       const response = await api.post('/rooms', payload);
+      toast.success('Workspace deployed successfully!');
       navigate(`/room/${response.data.room_key}`);
     } catch (err) {
       console.error("Error creating room:", err);
-      setError(err.response?.data?.detail || 'Failed to create room. Please try again.');
+      const errorMessage = err.response?.data?.detail || 'Failed to create room. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -88,8 +92,7 @@ const CreateRoomPage = () => {
         </div>
       </nav>
 
-      {/* Increased container width to max-w-4xl to accommodate side-by-side offset flow */}
-      <main className="relative z-10 max-w-4xl mx-auto w-full px-6 pt-28 pb-24">
+      <main className="relative z-10 max-w-4xl mx-auto w-full px-6 pt-24 pb-24 lg:pt-28">
         {/* Header Section */}
         <div className="mb-10">
           <button 
@@ -99,11 +102,11 @@ const CreateRoomPage = () => {
             <ArrowLeftIcon className="w-3.5 h-3.5" /> Back to Terminal
           </button>
           <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-2">Workspace Initialization</p>
-          <h1 className="text-4xl font-bold tracking-tight text-white uppercase">Create Room</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white uppercase">Create Room</h1>
         </div>
 
         {/* Configuration Matrix Panel - Solid Borders Added */}
-        <div className="border border-white/400 bg-black/40 p-8 sm:p-10">
+        <div className="border border-white/10 bg-black/40 p-6 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
               <div className="border border-red-500/40 bg-red-500/5 p-4 text-xs text-red-400 uppercase tracking-wider">
@@ -123,7 +126,7 @@ const CreateRoomPage = () => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="E.G., DISTRIBUTED INDEX WORKSPACE"
-                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
+                className="w-full bg-transparent border border-white/20 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
               />
             </div>
 
@@ -139,7 +142,7 @@ const CreateRoomPage = () => {
                 onChange={handleChange}
                 rows={5}
                 placeholder="DEFINE THE PLATFORM CONSTRAINTS AND OBJECTIVES..."
-                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
+                className="w-full bg-transparent border border-white/20 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
               />
             </div>
 
@@ -154,7 +157,7 @@ const CreateRoomPage = () => {
                 onChange={handleChange}
                 rows={3}
                 placeholder="ADDITIONAL SYSTEM PARAMETERS, RESOURCE LINKS, OR TIME COMPLEXITIES..."
-                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
+                className="w-full bg-transparent border border-white/20 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
               />
             </div>
 
@@ -169,14 +172,14 @@ const CreateRoomPage = () => {
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="E.G., REGEX, BACKEND, ALGORITHMS"
-                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
+                className="w-full bg-transparent border border-white/20 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
               />
             </div>
 
             {/* Field 5: Gateways Checkbox Option */}
             <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-center">
-              <div className="hidden md:block" /> {/* Dummy cell for left alignment balancing */}
-              <div className="flex items-center gap-3 p-4 border border-white/40 bg-zinc-900/40">
+              <div className="hidden md:block" />
+              <div className="flex items-center gap-3 p-4 border border-white/10 bg-zinc-900/40">
                 <input 
                   type="checkbox"
                   name="is_public"
@@ -185,17 +188,17 @@ const CreateRoomPage = () => {
                   onChange={handleChange}
                   className="w-3.5 h-3.5 border-white/40 bg-transparent text-white focus:ring-0 focus:ring-offset-0 accent-zinc-800 cursor-pointer"
                 />
-                <label htmlFor="is_public" className="text-xs uppercase tracking-widest text-zinc-400 cursor-pointer select-none">
+                <label htmlFor="is_public" className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 cursor-pointer select-none">
                   Private Room (Only visible to you)
                 </label>
               </div>
             </div>
 
-            <div className="border-t border-white/40 pt-4" />
+            <div className="border-t border-white/20 pt-4" />
 
             {/* Action Deployment Trigger */}
             <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-center">
-              <div className="hidden md:block" /> {/* Left gap spacing layout placeholder */}
+              <div className="hidden md:block" />
               <button 
                 type="submit"
                 disabled={loading}

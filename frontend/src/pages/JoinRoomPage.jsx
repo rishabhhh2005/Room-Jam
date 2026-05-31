@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import api from '../api/axios';
 
 const JoinRoomPage = () => {
@@ -17,17 +18,20 @@ const JoinRoomPage = () => {
 
     try {
       const response = await api.post('/rooms/join', { room_key: roomKey.trim() });
+      toast.success('Joined workspace successfully!');
       navigate(`/room/${response.data.room_key}`);
     } catch (err) {
       console.error("Error joining room:", err);
-      setError(err.response?.data?.detail || 'Room not found or failed to join.');
+      const errorMessage = err.response?.data?.detail || 'Room not found or failed to join.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-y-auto relative selection:bg-white selection:text-black">
       {/* Grid Background */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
@@ -56,7 +60,7 @@ const JoinRoomPage = () => {
         </div>
       </nav>
 
-      <main className="relative z-10 min-h-screen flex items-center justify-center px-6 pt-14">
+      <main className="relative z-10 min-h-screen flex items-center justify-center px-6 pt-24 pb-12">
         <div className="w-full max-w-md">
           
           <div className="mb-8 text-center">
@@ -67,7 +71,7 @@ const JoinRoomPage = () => {
               <ArrowLeftIcon className="w-3.5 h-3.5" /> Back to Terminal
             </button>
             <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-2">Gate Access — Establish Link</p>
-            <h1 className="text-4xl font-bold tracking-tight text-white uppercase">Join Room</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white uppercase">Join Room</h1>
           </div>
 
           <div className="border border-white/[0.06] bg-black/20 p-6">
@@ -88,7 +92,7 @@ const JoinRoomPage = () => {
                   value={roomKey}
                   onChange={(e) => setRoomKey(e.target.value.toUpperCase())}
                   placeholder="RJ-XXXX-XXXX"
-                  className="w-full bg-transparent border border-white/[0.08] px-4 py-4 text-center text-xl font-bold tracking-[0.2em] text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors uppercase"
+                  className="w-full bg-transparent border border-white/[0.08] px-4 py-4 text-center text-lg md:text-xl font-bold tracking-[0.2em] text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors uppercase"
                   maxLength={12}
                 />
               </div>

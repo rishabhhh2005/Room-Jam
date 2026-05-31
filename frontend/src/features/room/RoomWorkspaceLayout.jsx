@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function RoomWorkspaceLayout({
@@ -12,10 +12,28 @@ function RoomWorkspaceLayout({
   const navigate = useNavigate();
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [rightSidebarWidth, setRightSidebarWidth] = useState(310);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(false);
+  const [showRightSidebar, setShowRightSidebar] = useState(false);
+  
   const isResizingLeft = useRef(false);
   const isResizingRight = useRef(false);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setShowLeftSidebar(false);
+        setShowRightSidebar(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const startResizingLeft = (e) => {
+    if (isMobile) return;
     isResizingLeft.current = true;
     document.addEventListener("mousemove", handleMouseMoveLeft);
     document.addEventListener("mouseup", stopResizing);
@@ -24,6 +42,7 @@ function RoomWorkspaceLayout({
   };
 
   const startResizingRight = (e) => {
+    if (isMobile) return;
     isResizingRight.current = true;
     document.addEventListener("mousemove", handleMouseMoveRight);
     document.addEventListener("mouseup", stopResizing);
@@ -61,20 +80,16 @@ function RoomWorkspaceLayout({
     navigate("/dashboard");
   };
 
-  // Safe Extraction: Agar single composite component (<CollaborativeCodeEditor/>) wrapped hai,
-  // to hum directly children pass karenge, varna criteria match nikalenge.
+  // Robust Child Extraction
   const childrenArray = React.Children.toArray(children);
   
-  let mainContent = childrenArray.find(child => child.props?.className?.includes('flex-1'));
-  let chatContent = childrenArray.find(child => child.props?.className?.includes('w-80'));
-
-  // Fallback fallback mechanism agar custom components passed hain direct children bina styles ke
-  if (!mainContent && childrenArray.length > 0) {
-    mainContent = children;
-  }
+  // Find main content (editor/whiteboard/notes) and chat panel
+  // On mobile, we want to ensure they are rendered correctly even if extraction logic is slightly off
+  const mainContent = childrenArray[0];
+  const chatContent = childrenArray[1];
 
   return (
-    <div className="h-screen bg-[#080808] text-zinc-100 flex flex-col font-mono overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="h-screen w-full bg-[#080808] text-zinc-100 flex flex-col font-mono overflow-hidden relative selection:bg-white selection:text-black">
       {/* Grid Background Overlay */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
@@ -86,49 +101,62 @@ function RoomWorkspaceLayout({
       />
 
       {/* Header */}
-      <header className="h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-6 flex items-center justify-between relative z-50 shrink-0">
-        <div className="flex items-center gap-4 w-1/4">
+      <header className="h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-4 md:px-6 flex items-center justify-between relative z-50 shrink-0">
+        <div className="flex items-center gap-2 md:gap-4 w-1/4 lg:w-1/4">
+          <button 
+            onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+            className="lg:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+          >
+            <MenuIcon />
+          </button>
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <span className="text-sm font-bold tracking-widest uppercase text-white">RoomJam</span>
+            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-white">RoomJam</span>
           </div>
-          <div className="h-4 w-px bg-white/[0.08] hidden md:block" />
-          <div className="hidden md:flex flex-col">
+          <div className="h-4 w-px bg-white/[0.08] hidden lg:block" />
+          <div className="hidden lg:flex flex-col">
             <span className="text-[10px] uppercase tracking-widest text-white/40">NODE_ID</span>
             <span className="text-xs text-zinc-400 tracking-wider font-bold">{roomId}</span>
           </div>
         </div>
 
         {/* Center: Workspace Matrix Tool Selection */}
-        <div className="flex-1 flex justify-center items-center gap-1.5">
+        <div className="flex-1 flex justify-center items-center gap-1 md:gap-1.5 px-2">
           <TabButton 
             active={activeTab === "editor"} 
-            onClick={() => setActiveTab("editor")}
+            onClick={() => { setActiveTab("editor"); setShowLeftSidebar(false); setShowRightSidebar(false); }}
             icon={<CodeIcon />}
-            label="EDITOR"
+            label={isMobile ? "" : "EDITOR"}
           />
           <TabButton 
             active={activeTab === "whiteboard"} 
-            onClick={() => setActiveTab("whiteboard")}
+            onClick={() => { setActiveTab("whiteboard"); setShowLeftSidebar(false); setShowRightSidebar(false); }}
             icon={<PenIcon />}
-            label="WHITEBOARD"
+            label={isMobile ? "" : "WHITEBOARD"}
           />
           <TabButton 
             active={activeTab === "notes"} 
-            onClick={() => setActiveTab("notes")}
+            onClick={() => { setActiveTab("notes"); setShowLeftSidebar(false); setShowRightSidebar(false); }}
             icon={<FileTextIcon />}
-            label="NOTES"
+            label={isMobile ? "" : "NOTES"}
           />
         </div>
 
-        <div className="flex items-center justify-end gap-6 w-1/4">
-          <div className="hidden lg:block text-[10px] font-bold text-emerald-400 tracking-widest uppercase border border-emerald-500/20 bg-emerald-500/[0.02] px-2.5 py-1">
+        <div className="flex items-center justify-end gap-2 md:gap-6 w-1/4 lg:w-1/4">
+          <div className="hidden xl:block text-[10px] font-bold text-emerald-400 tracking-widest uppercase border border-emerald-500/20 bg-emerald-500/[0.02] px-2.5 py-1">
             [SYS_ONLINE]
           </div>
 
           <button 
+            onClick={() => setShowRightSidebar(!showRightSidebar)}
+            className="lg:hidden p-1.5 md:p-2 text-zinc-400 hover:text-white transition-colors"
+          >
+            <ChatIcon />
+          </button>
+
+          <button 
             type="button"
             onClick={handleLeave}
-            className="px-4 py-1.5 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold"
+            className="px-2 md:px-4 py-1.5 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-[10px] md:text-xs uppercase tracking-widest font-bold"
           >
             Leave
           </button>
@@ -136,12 +164,31 @@ function RoomWorkspaceLayout({
       </header>
 
       {/* Body Area Layout */}
-      <div className="flex flex-1 overflow-hidden relative z-10">
+      <div className="flex-1 flex overflow-hidden relative z-10 w-full h-full">
+        {/* Left Sidebar Overlay for Mobile */}
+        {isMobile && showLeftSidebar && (
+          <div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60]"
+            onClick={() => setShowLeftSidebar(false)}
+          />
+        )}
+
         {/* Left Sidebar: Index Specs & Peers */}
         <aside 
-          style={{ width: `${sidebarWidth}px` }}
-          className="border-r border-white/[0.06] bg-[#080808]/40 backdrop-blur-sm flex flex-col shrink-0 relative group/sidebar"
+          style={{ width: isMobile ? '85%' : `${sidebarWidth}px`, maxWidth: '320px' }}
+          className={`
+            border-r border-white/[0.06] bg-[#080808] lg:bg-[#080808]/40 backdrop-blur-sm flex flex-col shrink-0 relative transition-transform duration-300 z-[70] h-full
+            ${isMobile ? (showLeftSidebar ? 'translate-x-0 fixed inset-y-0 left-0 pt-14' : '-translate-x-full fixed inset-y-0 left-0 pt-14') : 'translate-x-0'}
+          `}
         >
+          {isMobile && (
+            <button 
+              onClick={() => setShowLeftSidebar(false)}
+              className="absolute top-2 right-2 p-2 text-zinc-500 hover:text-white"
+            >
+              <CloseIcon />
+            </button>
+          )}
           {/* Section: Problem Metadata Specs */}
           <div className="p-6 border-b border-white/[0.06] overflow-hidden bg-black/10">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
@@ -151,7 +198,7 @@ function RoomWorkspaceLayout({
                <h3 className="font-bold text-white text-md uppercase tracking-wide leading-tight">
                  {roomData?.title || 'LOADING...'}
                </h3>
-               <div className="max-h-52 overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap font-sans">
+               <div className="max-h-40 lg:max-h-none overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap font-sans">
                   {roomData?.problem_statement || 'No problem statement provided.'}
                </div>
                {roomData?.tags && (
@@ -167,7 +214,7 @@ function RoomWorkspaceLayout({
           </div>
 
           {/* Section: Peer Nodes Connection Stack */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
               // PEER_NODES ({participants.length})
             </h2>
@@ -196,30 +243,51 @@ function RoomWorkspaceLayout({
              </div>
           </div>
 
-          {/* Drag Resizer Interactive Node */}
-          <div 
-            onMouseDown={startResizingLeft}
-            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-white/30 transition-colors z-50"
-          />
+          {!isMobile && (
+            <div 
+              onMouseDown={startResizingLeft}
+              className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-white/30 transition-colors z-50"
+            />
+          )}
         </aside>
 
         {/* Main Interface Area */}
-        <main className="flex-1 flex overflow-hidden min-h-0 bg-[#0c0c0c]">
-           <div className="flex-1 overflow-hidden min-w-0 h-full">
+        <main className="flex-1 flex overflow-hidden bg-[#0c0c0c] relative z-10 w-full h-full">
+           <div className="flex-1 min-w-0 w-full h-full">
               {mainContent}
            </div>
 
-           {/* Render chat panel conditionally if it exists as an independent child node */}
+           {/* Chat Panel Overlay for Mobile */}
+           {isMobile && showRightSidebar && (
+             <div 
+               className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60]"
+               onClick={() => setShowRightSidebar(false)}
+             />
+           )}
+
            {chatContent && (
              <>
+               {!isMobile && (
+                 <div 
+                   onMouseDown={startResizingRight}
+                   className="w-px h-full cursor-col-resize hover:bg-white/30 transition-colors z-50 bg-white/[0.06] shrink-0"
+                 />
+               )}
                <div 
-                 onMouseDown={startResizingRight}
-                 className="w-px h-full cursor-col-resize hover:bg-white/30 transition-colors z-50 bg-white/[0.06] shrink-0"
-               />
-               <div 
-                 style={{ width: `${rightSidebarWidth}px` }}
-                 className="shrink-0 bg-[#080808] border-l border-white/[0.06] flex flex-col h-full overflow-hidden relative"
+                 style={{ width: isMobile ? '85%' : `${rightSidebarWidth}px`, maxWidth: '320px' }}
+                 className={`
+                    shrink-0 bg-[#080808] lg:border-l lg:border-white/[0.06] flex flex-col h-full overflow-hidden relative transition-transform duration-300 z-[70]
+                    ${isMobile ? (showRightSidebar ? 'translate-x-0 fixed inset-y-0 right-0 pt-14' : 'translate-x-full fixed inset-y-0 right-0 pt-14') : 'translate-x-0'}
+                 `}
                >
+                  {isMobile && (
+                    <button 
+                      onClick={() => setShowRightSidebar(false)}
+                      className="absolute top-2 left-2 p-2 text-zinc-500 hover:text-white z-20"
+                    >
+                      <CloseIcon />
+                    </button>
+                  )}
                   {React.cloneElement(chatContent, { 
                     style: { width: '100%', height: '100%' }, 
                     className: chatContent.props.className?.replace('w-80', '') || ""
@@ -237,7 +305,7 @@ const TabButton = ({ active, onClick, icon, label }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 h-9 border text-xs font-bold tracking-widest uppercase transition-all ${
+    className={`flex items-center gap-2 px-3 md:px-4 h-9 border text-[10px] md:text-xs font-bold tracking-widest uppercase transition-all ${
       active
         ? "bg-white text-black border-white"
         : "text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.02]"
@@ -246,8 +314,20 @@ const TabButton = ({ active, onClick, icon, label }) => (
     <span className="transition-colors shrink-0">
       {icon}
     </span>
-    <span>{label}</span>
+    {label && <span>{label}</span>}
   </button>
+);
+
+const MenuIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
 );
 
 const CodeIcon = () => (
@@ -265,6 +345,12 @@ const PenIcon = () => (
 const FileTextIcon = () => (
   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 

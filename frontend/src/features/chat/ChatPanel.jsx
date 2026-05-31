@@ -28,16 +28,16 @@ function ChatPanel({ roomKey, currentUser }) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-zinc-900 border-l border-zinc-800">
+    <div className="h-full flex flex-col bg-[#080808] font-mono">
       {/* Header */}
-      <div className="p-4 border-b border-zinc-800">
-        <h2 className="font-semibold text-white">
-          Chat
+      <div className="p-4 border-b border-white/[0.06] bg-black/20">
+        <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600">
+          // COMMS_CHANNEL
         </h2>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 no-scrollbar">
         {messages.map((message) => {
           const isMine =
             message.sender === currentUser.username;
@@ -45,33 +45,28 @@ function ChatPanel({ roomKey, currentUser }) {
           return (
             <div
               key={message.id}
-              className={`flex ${
+              className={`flex flex-col ${
                 isMine
-                  ? "justify-end"
-                  : "justify-start"
+                  ? "items-end"
+                  : "items-start"
               }`}
             >
+              <div className="flex items-center gap-2 mb-1 px-1">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isMine ? 'text-zinc-500' : 'text-emerald-500'}`}>
+                  {message.sender}
+                </span>
+                <span className="text-[9px] text-zinc-700">
+                  {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
               <div
-                className={`max-w-[75%] rounded-lg px-3 py-2 ${
+                className={`max-w-[90%] px-3 py-2 border ${
                   isMine
-                    ? "bg-blue-600 text-white"
-                    : "bg-zinc-800 text-white"
+                    ? "bg-white/[0.02] border-white/10 text-white"
+                    : "bg-emerald-500/[0.02] border-emerald-500/10 text-emerald-500/90"
                 }`}
               >
-                <div className="text-xs opacity-70 mb-1">
-                  {message.sender}
-                </div>
-
-                <div>{message.text}</div>
-
-                <div className="text-[10px] opacity-60 mt-1">
-                  {new Date(
-                    message.timestamp
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
+                <div className="text-xs leading-relaxed break-words">{message.text}</div>
               </div>
             </div>
           );
@@ -80,28 +75,27 @@ function ChatPanel({ roomKey, currentUser }) {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-zinc-800 flex gap-2">
-        <input
-          value={text}
-          onChange={(e) =>
-            setText(e.target.value)
-          }
-          placeholder="Send a message..."
-          className="flex-1 bg-zinc-800 text-white rounded px-3 py-2 outline-none"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSend();
-            }
-          }}
-        />
-
-        <button
-          onClick={handleSend}
-          className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-500 text-white"
-        >
-          Send
-        </button>
+      {/* Input Area */}
+      <div className="p-4 border-t border-white/[0.06] bg-black/20">
+        <div className="flex flex-col gap-2">
+           <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="TYPE_MESSAGE..."
+            className="w-full bg-transparent border border-white/10 px-3 py-2.5 text-xs text-white placeholder:text-zinc-800 outline-none focus:border-white/30 transition-colors uppercase"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSend();
+              }
+            }}
+          />
+          <button
+            onClick={handleSend}
+            className="w-full py-2 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white border border-white transition-all"
+          >
+            Transmit →
+          </button>
+        </div>
       </div>
     </div>
   );
