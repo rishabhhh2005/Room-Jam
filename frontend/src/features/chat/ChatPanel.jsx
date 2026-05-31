@@ -28,16 +28,16 @@ function ChatPanel({ roomKey, currentUser }) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#080808] font-mono">
+    <div className="h-full w-full max-w-full min-w-0 flex flex-col bg-[#080808] font-mono">
       {/* Header */}
-      <div className="p-4 border-b border-white/[0.06] bg-black/20">
+      <div className="p-4 border-b border-white/[0.06] bg-black/20 min-w-0">
         <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600">
           // COMMS_CHANNEL
         </h2>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 no-scrollbar">
+      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto p-4 space-y-4 no-scrollbar">
         {messages.map((message) => {
           const isMine =
             message.sender === currentUser.username;
@@ -51,8 +51,8 @@ function ChatPanel({ roomKey, currentUser }) {
                   : "items-start"
               }`}
             >
-              <div className="flex items-center gap-2 mb-1 px-1">
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${isMine ? 'text-zinc-500' : 'text-emerald-500'}`}>
+              <div className="flex items-center gap-2 mb-1 px-1 max-w-full min-w-0">
+                <span className={`text-[10px] font-bold uppercase tracking-wider truncate ${isMine ? 'text-zinc-500' : 'text-emerald-500'}`}>
                   {message.sender}
                 </span>
                 <span className="text-[9px] text-zinc-700">
@@ -66,7 +66,7 @@ function ChatPanel({ roomKey, currentUser }) {
                     : "bg-emerald-500/[0.02] border-emerald-500/10 text-emerald-500/90"
                 }`}
               >
-                <div className="text-xs leading-relaxed break-words">{message.text}</div>
+                <div className="text-xs leading-relaxed break-words min-w-0">{message.text}</div>
               </div>
             </div>
           );
@@ -76,13 +76,13 @@ function ChatPanel({ roomKey, currentUser }) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-white/[0.06] bg-black/20">
+      <div className="p-4 border-t border-white/[0.06] bg-black/20 min-w-0">
         <div className="flex flex-col gap-2">
            <input
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="TYPE_MESSAGE..."
-            className="w-full bg-transparent border border-white/10 px-3 py-2.5 text-xs text-white placeholder:text-zinc-800 outline-none focus:border-white/30 transition-colors uppercase"
+            className="w-full min-w-0 bg-transparent border border-white/10 px-3 py-2.5 text-xs text-white placeholder:text-zinc-800 outline-none focus:border-white/30 transition-colors uppercase"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSend();
@@ -91,9 +91,9 @@ function ChatPanel({ roomKey, currentUser }) {
           />
           <button
             onClick={handleSend}
-            className="w-full py-2 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white border border-white transition-all"
+            className="w-full min-w-0 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white border border-white transition-all touch-manipulation"
           >
-            Transmit →
+            Transmit -&gt;
           </button>
         </div>
       </div>

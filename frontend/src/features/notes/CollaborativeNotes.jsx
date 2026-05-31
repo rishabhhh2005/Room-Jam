@@ -8,26 +8,27 @@ function CollaborativeNotes({ roomKey }) {
   useCollaborativeEditor(`${roomKey}-notes`, editor);
 
   return (
-    <div className="h-full bg-zinc-950 flex flex-col">
-      <div className="h-14 border-b border-zinc-800 px-6 flex items-center justify-between">
-        <div>
+    <div className="h-full w-full max-w-full min-w-0 bg-zinc-950 flex flex-col">
+      <div className="min-h-14 border-b border-zinc-800 px-4 sm:px-6 py-2 flex items-center justify-between gap-3 min-w-0">
+        <div className="min-w-0">
           <h2 className="text-white font-semibold">
             Shared Notes
           </h2>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-zinc-400 truncate">
             Collaborative markdown document
           </p>
         </div>
 
-        <div className="text-xs text-emerald-400">
+        <div className="text-xs text-emerald-400 shrink-0">
           Live Sync
         </div>
       </div>
 
-      <div className="flex-1 px-12 py-8 overflow-hidden">
-        <div className="h-full max-w-4xl mx-auto border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
+      <div className="flex-1 min-h-0 min-w-0 px-3 sm:px-6 lg:px-12 py-3 sm:py-6 lg:py-8">
+        <div className="h-full w-full max-w-4xl mx-auto border border-zinc-800 sm:rounded-lg overflow-hidden shadow-2xl">
           <Editor
             height="100%"
+            width="100%"
             language="markdown"
             theme="vs-dark"
             onMount={setEditor}
@@ -53,6 +54,7 @@ Start writing here...
               lineNumbers: "off",
               renderLineHighlight: "none",
               overviewRulerBorder: false,
+              automaticLayout: true,
             }}
           />
         </div>

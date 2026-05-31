@@ -42,7 +42,7 @@ function RoomPage() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen bg-[#050505] text-zinc-400 font-mono relative overflow-hidden flex flex-col justify-between p-8 md:p-16 select-none">
+      <div className="min-h-dvh w-full max-w-full bg-[#050505] text-zinc-400 font-mono relative flex flex-col justify-between p-4 sm:p-8 md:p-16 select-none">
         <div
           className="fixed inset-0 pointer-events-none z-0 opacity-40"
           style={{
@@ -52,7 +52,7 @@ function RoomPage() {
           }}
         />
 
-        <header className="relative z-10 flex justify-between items-start border-b border-zinc-900 pb-6">
+        <header className="relative z-10 flex justify-between items-start border-b border-zinc-900 pb-6 min-w-0">
           <div>
             <h1 className="text-white text-xs tracking-[0.4em] uppercase font-bold flex items-center gap-2">
               <span className="w-2 h-2 bg-white rounded-full animate-ping" />
@@ -61,8 +61,8 @@ function RoomPage() {
           </div>
         </header>
 
-        <main className="relative z-10 flex-1 grid md:grid-cols-2 gap-12 items-center my-12">
-          <div className="space-y-6">
+        <main className="relative z-10 flex-1 grid md:grid-cols-2 gap-8 md:gap-12 items-center my-8 md:my-12 min-w-0">
+          <div className="space-y-6 min-w-0">
             <div className="space-y-2">
               <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white uppercase select-none">
                 Joining<br />
@@ -78,7 +78,7 @@ function RoomPage() {
             </div>
           </div>
 
-          <div className="flex flex-col md:items-end justify-center md:text-right border-t md:border-t-0 md:border-l border-zinc-900 pt-8 md:pt-0 md:pl-12 h-full">
+          <div className="flex flex-col md:items-end justify-center md:text-right border-t md:border-t-0 md:border-l border-zinc-900 pt-8 md:pt-0 md:pl-12 h-full min-w-0">
             <span className="text-[10px] tracking-[0.4em] text-zinc-600 uppercase block mb-2">TARGET_WORKSPACE</span>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-widest text-white uppercase break-all bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-400 to-zinc-700">
               {roomKey}
@@ -98,8 +98,8 @@ function RoomPage() {
   }
 
   return (
-    <div className="h-screen w-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
-      <main className="flex-1 w-full relative overflow-hidden bg-black">
+    <div className="h-dvh w-full max-w-full bg-[#0a0a0a] text-white flex flex-col min-w-0">
+      <main className="flex-1 w-full min-w-0 relative bg-black">
         {/* Pass downstream safely to the feature canvas */}
         <CollaborativeCodeEditor roomKey={roomKey} currentUser={user} roomData={room} />
       </main>

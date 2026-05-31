@@ -12,7 +12,7 @@ function RoomWorkspaceLayout({
   const navigate = useNavigate();
   const [sidebarWidth, setSidebarWidth] = useState(300);
   const [rightSidebarWidth, setRightSidebarWidth] = useState(310);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightSidebar, setShowRightSidebar] = useState(false);
   
@@ -32,7 +32,7 @@ function RoomWorkspaceLayout({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const startResizingLeft = (e) => {
+  const startResizingLeft = () => {
     if (isMobile) return;
     isResizingLeft.current = true;
     document.addEventListener("mousemove", handleMouseMoveLeft);
@@ -41,7 +41,7 @@ function RoomWorkspaceLayout({
     document.body.style.userSelect = "none";
   };
 
-  const startResizingRight = (e) => {
+  const startResizingRight = () => {
     if (isMobile) return;
     isResizingRight.current = true;
     document.addEventListener("mousemove", handleMouseMoveRight);
@@ -87,9 +87,16 @@ function RoomWorkspaceLayout({
   // On mobile, we want to ensure they are rendered correctly even if extraction logic is slightly off
   const mainContent = childrenArray[0];
   const chatContent = childrenArray[1];
+  const mobileDrawerWidth = "min(20rem, calc(100dvw - 2rem))";
+  const leftSidebarStyle = isMobile
+    ? { width: mobileDrawerWidth, maxWidth: mobileDrawerWidth }
+    : { width: `${sidebarWidth}px`, maxWidth: "500px" };
+  const rightSidebarStyle = isMobile
+    ? { width: mobileDrawerWidth, maxWidth: mobileDrawerWidth }
+    : { width: `${rightSidebarWidth}px`, maxWidth: "500px" };
 
   return (
-    <div className="h-screen w-full bg-[#080808] text-zinc-100 flex flex-col font-mono overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="h-dvh w-full max-w-full min-w-0 bg-[#080808] text-zinc-100 flex flex-col font-mono relative selection:bg-white selection:text-black">
       {/* Grid Background Overlay */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
@@ -101,26 +108,27 @@ function RoomWorkspaceLayout({
       />
 
       {/* Header */}
-      <header className="h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-4 md:px-6 flex items-center justify-between relative z-50 shrink-0">
-        <div className="flex items-center gap-2 md:gap-4 w-1/4 lg:w-1/4">
+      <header className="min-h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-2 sm:px-4 md:px-6 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1 sm:gap-3 relative z-50 shrink-0 min-w-0">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-4 min-w-0">
           <button 
             onClick={() => setShowLeftSidebar(!showLeftSidebar)}
-            className="lg:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+            className="lg:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0 touch-manipulation"
+            aria-label="Open room details"
           >
             <MenuIcon />
           </button>
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-white">RoomJam</span>
+          <div className="flex items-center gap-2 cursor-pointer min-w-0" onClick={() => navigate('/dashboard')}>
+            <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-white truncate">RoomJam</span>
           </div>
           <div className="h-4 w-px bg-white/[0.08] hidden lg:block" />
           <div className="hidden lg:flex flex-col">
             <span className="text-[10px] uppercase tracking-widest text-white/40">NODE_ID</span>
-            <span className="text-xs text-zinc-400 tracking-wider font-bold">{roomId}</span>
+            <span className="text-xs text-zinc-400 tracking-wider font-bold truncate max-w-40">{roomId}</span>
           </div>
         </div>
 
         {/* Center: Workspace Matrix Tool Selection */}
-        <div className="flex-1 flex justify-center items-center gap-1 md:gap-1.5 px-2">
+        <div className="min-w-0 flex justify-center items-center gap-1 md:gap-1.5 px-1 sm:px-2">
           <TabButton 
             active={activeTab === "editor"} 
             onClick={() => { setActiveTab("editor"); setShowLeftSidebar(false); setShowRightSidebar(false); }}
@@ -141,14 +149,15 @@ function RoomWorkspaceLayout({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2 md:gap-6 w-1/4 lg:w-1/4">
+        <div className="flex items-center justify-end gap-1 sm:gap-2 md:gap-6 min-w-0">
           <div className="hidden xl:block text-[10px] font-bold text-emerald-400 tracking-widest uppercase border border-emerald-500/20 bg-emerald-500/[0.02] px-2.5 py-1">
             [SYS_ONLINE]
           </div>
 
           <button 
             onClick={() => setShowRightSidebar(!showRightSidebar)}
-            className="lg:hidden p-1.5 md:p-2 text-zinc-400 hover:text-white transition-colors"
+            className="lg:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0 touch-manipulation"
+            aria-label="Open chat"
           >
             <ChatIcon />
           </button>
@@ -156,7 +165,7 @@ function RoomWorkspaceLayout({
           <button 
             type="button"
             onClick={handleLeave}
-            className="px-2 md:px-4 py-1.5 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-[10px] md:text-xs uppercase tracking-widest font-bold"
+            className="px-2 md:px-4 h-9 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-[10px] md:text-xs uppercase tracking-widest font-bold shrink-0 touch-manipulation"
           >
             Leave
           </button>
@@ -164,7 +173,7 @@ function RoomWorkspaceLayout({
       </header>
 
       {/* Body Area Layout */}
-      <div className="flex-1 flex overflow-hidden relative z-10 w-full h-full">
+      <div className="flex-1 flex min-w-0 overflow-hidden relative z-10 w-full h-full">
         {/* Left Sidebar Overlay for Mobile */}
         {isMobile && showLeftSidebar && (
           <div 
@@ -175,30 +184,31 @@ function RoomWorkspaceLayout({
 
         {/* Left Sidebar: Index Specs & Peers */}
         <aside 
-          style={{ width: isMobile ? '85%' : `${sidebarWidth}px`, maxWidth: '320px' }}
+          style={leftSidebarStyle}
           className={`
-            border-r border-white/[0.06] bg-[#080808] lg:bg-[#080808]/40 backdrop-blur-sm flex flex-col shrink-0 relative transition-transform duration-300 z-[70] h-full
-            ${isMobile ? (showLeftSidebar ? 'translate-x-0 fixed inset-y-0 left-0 pt-14' : '-translate-x-full fixed inset-y-0 left-0 pt-14') : 'translate-x-0'}
+            border-r border-white/[0.06] bg-[#080808] lg:bg-[#080808]/40 backdrop-blur-sm flex-col shrink-0 relative transition-transform duration-300 z-[70] h-full min-w-0
+            ${isMobile ? (showLeftSidebar ? 'flex fixed inset-y-0 left-0 pt-14 translate-x-0' : 'hidden') : 'flex translate-x-0'}
           `}
         >
           {isMobile && (
             <button 
               onClick={() => setShowLeftSidebar(false)}
-              className="absolute top-2 right-2 p-2 text-zinc-500 hover:text-white"
+              className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-white touch-manipulation"
+              aria-label="Close room details"
             >
               <CloseIcon />
             </button>
           )}
           {/* Section: Problem Metadata Specs */}
-          <div className="p-6 border-b border-white/[0.06] overflow-hidden bg-black/10">
+          <div className="p-4 sm:p-6 border-b border-white/[0.06] bg-black/10 min-w-0">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
               // SPECIFICATION_INDEX
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-4 min-w-0">
                <h3 className="font-bold text-white text-md uppercase tracking-wide leading-tight">
                  {roomData?.title || 'LOADING...'}
                </h3>
-               <div className="max-h-40 lg:max-h-none overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap font-sans">
+               <div className="max-h-40 lg:max-h-none overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap break-words font-sans">
                   {roomData?.problem_statement || 'No problem statement provided.'}
                </div>
                {roomData?.tags && (
@@ -214,7 +224,7 @@ function RoomWorkspaceLayout({
           </div>
 
           {/* Section: Peer Nodes Connection Stack */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
               // PEER_NODES ({participants.length})
             </h2>
@@ -223,7 +233,7 @@ function RoomWorkspaceLayout({
               {participants.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default"
+                  className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default min-w-0"
                 >
                   <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400">
                     {user.name ? user.name[0].toUpperCase() : "P"}
@@ -252,8 +262,8 @@ function RoomWorkspaceLayout({
         </aside>
 
         {/* Main Interface Area */}
-        <main className="flex-1 flex overflow-hidden bg-[#0c0c0c] relative z-10 w-full h-full">
-           <div className="flex-1 min-w-0 w-full h-full">
+        <main className="flex-1 min-w-0 flex overflow-hidden bg-[#0c0c0c] relative z-10 w-full h-full">
+           <div className="flex-1 min-w-0 w-full h-full max-w-full">
               {mainContent}
            </div>
 
@@ -274,24 +284,22 @@ function RoomWorkspaceLayout({
                  />
                )}
                <div 
-                 style={{ width: isMobile ? '85%' : `${rightSidebarWidth}px`, maxWidth: '320px' }}
+                 style={rightSidebarStyle}
                  className={`
-                    shrink-0 bg-[#080808] lg:border-l lg:border-white/[0.06] flex flex-col h-full overflow-hidden relative transition-transform duration-300 z-[70]
-                    ${isMobile ? (showRightSidebar ? 'translate-x-0 fixed inset-y-0 right-0 pt-14' : 'translate-x-full fixed inset-y-0 right-0 pt-14') : 'translate-x-0'}
+                    shrink-0 bg-[#080808] lg:border-l lg:border-white/[0.06] flex-col h-full overflow-hidden relative transition-transform duration-300 z-[70] min-w-0
+                    ${isMobile ? (showRightSidebar ? 'flex translate-x-0 fixed inset-y-0 right-0 pt-14' : 'hidden') : 'flex translate-x-0'}
                  `}
                >
                   {isMobile && (
                     <button 
                       onClick={() => setShowRightSidebar(false)}
-                      className="absolute top-2 left-2 p-2 text-zinc-500 hover:text-white z-20"
+                      className="absolute top-2 left-2 w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-white z-20 touch-manipulation"
+                      aria-label="Close chat"
                     >
                       <CloseIcon />
                     </button>
                   )}
-                  {React.cloneElement(chatContent, { 
-                    style: { width: '100%', height: '100%' }, 
-                    className: chatContent.props.className?.replace('w-80', '') || ""
-                  })}
+                  {chatContent}
                </div>
              </>
            )}
@@ -305,7 +313,7 @@ const TabButton = ({ active, onClick, icon, label }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex items-center gap-2 px-3 md:px-4 h-9 border text-[10px] md:text-xs font-bold tracking-widest uppercase transition-all ${
+    className={`flex items-center justify-center gap-2 w-10 md:w-auto md:px-4 h-9 border text-[10px] md:text-xs font-bold tracking-widest uppercase transition-all shrink-0 touch-manipulation ${
       active
         ? "bg-white text-black border-white"
         : "text-zinc-500 border-transparent hover:text-white hover:bg-white/[0.02]"
