@@ -205,7 +205,7 @@ const RegisterPage = () => {
 
               <div className="mt-8">
                 <p className="text-sm text-zinc-600">
-                  Already in the room?{' '}
+                  Already in the community?{' '}
                   <Link
                     to="/login"
                     className="text-zinc-400 hover:text-white transition-colors"
@@ -224,45 +224,29 @@ const RegisterPage = () => {
             <div>
 
               <p className="text-xs tracking-[0.35em] uppercase text-zinc-600 mb-10">
-                Prototype 01 — RoomJam
+                All rights reserved — RoomJam
               </p>
 
               <h1 className="text-7xl xl:text-8xl font-bold leading-[0.92] tracking-tight text-white mb-8">
                 Join
                 <br />
                 <span className="text-zinc-600">
-                  the room.
+                   community.
                 </span>
               </h1>
 
               <p className="text-lg text-zinc-500 leading-relaxed max-w-xl mb-12">
                 Create your workspace and start
-                collaborating on coding problems,
-                system designs and ideas with your
+                collaborating on  problems and
+                ideas with your
                 team in real time.
               </p>
 
               <div className="grid grid-cols-2 gap-8 max-w-lg">
 
-                <div className="border-t border-white/[0.06] pt-5">
-                  <p className="text-white text-sm mb-2">
-                    Problem-Centric
-                  </p>
-                  <p className="text-zinc-600 text-sm leading-relaxed">
-                    Every room begins with a problem
-                    and keeps all context together.
-                  </p>
-                </div>
+                
 
-                <div className="border-t border-white/[0.06] pt-5">
-                  <p className="text-white text-sm mb-2">
-                    Real-Time
-                  </p>
-                  <p className="text-zinc-600 text-sm leading-relaxed">
-                    Collaborate instantly with shared
-                    code, notes, whiteboards and chat.
-                  </p>
-                </div>
+               
 
               </div>
 

@@ -178,7 +178,7 @@ const LoginPage = () => {
           Enter
           <br />
           <span className="text-zinc-600">
-            the room.
+             community.
           </span>
         </h1>
 

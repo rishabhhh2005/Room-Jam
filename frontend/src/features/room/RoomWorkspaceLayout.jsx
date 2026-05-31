@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 function RoomWorkspaceLayout({
   roomId,
-  participants,
+  participants = [],
   activeTab,
   setActiveTab,
   roomData,
   children,
 }) {
   const navigate = useNavigate();
-  const [sidebarWidth, setSidebarWidth] = useState(320);
-  const [rightSidebarWidth, setRightSidebarWidth] = useState(320);
+  const [sidebarWidth, setSidebarWidth] = useState(300);
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(310);
   const isResizingLeft = useRef(false);
   const isResizingRight = useRef(false);
 
@@ -61,9 +61,17 @@ function RoomWorkspaceLayout({
     navigate("/dashboard");
   };
 
-  // Extract components from children
-  const mainContent = React.Children.toArray(children).find(child => child.props.className?.includes('flex-1'));
-  const chatContent = React.Children.toArray(children).find(child => child.props.className?.includes('w-80'));
+  // Safe Extraction: Agar single composite component (<CollaborativeCodeEditor/>) wrapped hai,
+  // to hum directly children pass karenge, varna criteria match nikalenge.
+  const childrenArray = React.Children.toArray(children);
+  
+  let mainContent = childrenArray.find(child => child.props?.className?.includes('flex-1'));
+  let chatContent = childrenArray.find(child => child.props?.className?.includes('w-80'));
+
+  // Fallback fallback mechanism agar custom components passed hain direct children bina styles ke
+  if (!mainContent && childrenArray.length > 0) {
+    mainContent = children;
+  }
 
   return (
     <div className="h-screen bg-[#080808] text-zinc-100 flex flex-col font-mono overflow-hidden relative selection:bg-white selection:text-black">
@@ -118,6 +126,7 @@ function RoomWorkspaceLayout({
           </div>
 
           <button 
+            type="button"
             onClick={handleLeave}
             className="px-4 py-1.5 border border-red-500/30 text-red-400 bg-red-500/[0.02] hover:bg-red-500 hover:text-black transition-colors text-xs uppercase tracking-widest font-bold"
           >
@@ -170,9 +179,9 @@ function RoomWorkspaceLayout({
                   className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default"
                 >
                   <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400">
-                    {user.name[0].toUpperCase()}
+                    {user.name ? user.name[0].toUpperCase() : "P"}
                   </div>
-                  <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">{user.name}</span>
+                  <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">{user.name || "User"}</span>
                   <span className="ml-auto text-[9px] text-emerald-500/80 font-bold tracking-widest">[OK]</span>
                 </div>
               ))}
@@ -194,38 +203,39 @@ function RoomWorkspaceLayout({
           />
         </aside>
 
-        {/* Main Interface Core Area (Center & Right Sidebar Combo) */}
+        {/* Main Interface Area */}
         <main className="flex-1 flex overflow-hidden min-h-0 bg-[#0c0c0c]">
            <div className="flex-1 overflow-hidden min-w-0 h-full">
               {mainContent}
            </div>
 
-           {/* Vertical Right Split Node Resizer Handle */}
-           <div 
-             onMouseDown={startResizingRight}
-             className="w-px h-full cursor-col-resize hover:bg-white/30 transition-colors z-50 bg-white/[0.06] shrink-0"
-           />
-
-           {/* Right Workspace Context Panel: Stream Channel Chat */}
-           <div 
-             style={{ width: `${rightSidebarWidth}px` }}
-             className="shrink-0 bg-[#080808] border-l border-white/[0.06] flex flex-col h-full overflow-hidden relative"
-           >
-              {chatContent && React.cloneElement(chatContent, { 
-                style: { width: '100%', height: '100%' }, 
-                className: chatContent.props.className.replace('w-80', '') 
-              })}
-           </div>
+           {/* Render chat panel conditionally if it exists as an independent child node */}
+           {chatContent && (
+             <>
+               <div 
+                 onMouseDown={startResizingRight}
+                 className="w-px h-full cursor-col-resize hover:bg-white/30 transition-colors z-50 bg-white/[0.06] shrink-0"
+               />
+               <div 
+                 style={{ width: `${rightSidebarWidth}px` }}
+                 className="shrink-0 bg-[#080808] border-l border-white/[0.06] flex flex-col h-full overflow-hidden relative"
+               >
+                  {React.cloneElement(chatContent, { 
+                    style: { width: '100%', height: '100%' }, 
+                    className: chatContent.props.className?.replace('w-80', '') || ""
+                  })}
+               </div>
+             </>
+           )}
         </main>
       </div>
     </div>
   );
 }
 
-/* --- Modular Layout Components --- */
-
 const TabButton = ({ active, onClick, icon, label }) => (
   <button
+    type="button"
     onClick={onClick}
     className={`flex items-center gap-2 px-4 h-9 border text-xs font-bold tracking-widest uppercase transition-all ${
       active
@@ -239,8 +249,6 @@ const TabButton = ({ active, onClick, icon, label }) => (
     <span>{label}</span>
   </button>
 );
-
-/* --- Minimalist Vector Geometry Pack --- */
 
 const CodeIcon = () => (
   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

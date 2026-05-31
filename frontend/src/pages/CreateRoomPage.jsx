@@ -59,7 +59,7 @@ const CreateRoomPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-y-auto relative selection:bg-white selection:text-black">
       {/* Grid Background */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
@@ -71,7 +71,7 @@ const CreateRoomPage = () => {
       />
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/20 bg-[#080808]/90 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => navigate('/dashboard')}
@@ -88,12 +88,13 @@ const CreateRoomPage = () => {
         </div>
       </nav>
 
-      <main className="relative z-10 max-w-2xl mx-auto w-full px-6 pt-28 pb-24">
+      {/* Increased container width to max-w-4xl to accommodate side-by-side offset flow */}
+      <main className="relative z-10 max-w-4xl mx-auto w-full px-6 pt-28 pb-24">
         {/* Header Section */}
         <div className="mb-10">
           <button 
             onClick={() => navigate('/dashboard')}
-            className="text-xs uppercase tracking-widest text-zinc-600 hover:text-white inline-flex items-center gap-2 mb-6 transition-colors"
+            className="text-xs uppercase tracking-widest text-zinc-500 hover:text-white inline-flex items-center gap-2 mb-6 transition-colors"
           >
             <ArrowLeftIcon className="w-3.5 h-3.5" /> Back to Terminal
           </button>
@@ -101,17 +102,18 @@ const CreateRoomPage = () => {
           <h1 className="text-4xl font-bold tracking-tight text-white uppercase">Create Room</h1>
         </div>
 
-        {/* Configuration Matrix Panel */}
-        <div className="border border-white/[0.06] bg-black/20 p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Configuration Matrix Panel - Solid Borders Added */}
+        <div className="border border-white/400 bg-black/40 p-8 sm:p-10">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="border border-red-500/20 bg-red-500/5 p-4 text-xs text-red-400 uppercase tracking-wider">
+              <div className="border border-red-500/40 bg-red-500/5 p-4 text-xs text-red-400 uppercase tracking-wider">
                 {error}
               </div>
             )}
 
-            <div className="space-y-2">
-              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-600">
+            {/* Field 1: Room Title (Left text, Right input framework) */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-start">
+              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400 pt-3">
                 Room Title
               </label>
               <input 
@@ -121,12 +123,13 @@ const CreateRoomPage = () => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="E.G., DISTRIBUTED INDEX WORKSPACE"
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors uppercase tracking-wide"
+                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-600">
+            {/* Field 2: Problem Statement */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-start">
+              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400 pt-3">
                 Problem Statement
               </label>
               <textarea 
@@ -134,14 +137,15 @@ const CreateRoomPage = () => {
                 required
                 value={formData.problem_statement}
                 onChange={handleChange}
-                rows={4}
+                rows={5}
                 placeholder="DEFINE THE PLATFORM CONSTRAINTS AND OBJECTIVES..."
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors resize-none tracking-wide"
+                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-600">
+            {/* Field 3: Context */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-start">
+              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400 pt-3">
                 Context (Optional)
               </label>
               <textarea 
@@ -150,13 +154,14 @@ const CreateRoomPage = () => {
                 onChange={handleChange}
                 rows={3}
                 placeholder="ADDITIONAL SYSTEM PARAMETERS, RESOURCE LINKS, OR TIME COMPLEXITIES..."
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors resize-none tracking-wide"
+                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors resize-none tracking-wide"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-600">
-                Tags (Comma Separated)
+            {/* Field 4: Tags */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-start">
+              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400 pt-3">
+                Tags
               </label>
               <input 
                 type="text"
@@ -164,37 +169,45 @@ const CreateRoomPage = () => {
                 value={formData.tags}
                 onChange={handleChange}
                 placeholder="E.G., REGEX, BACKEND, ALGORITHMS"
-                className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white/30 transition-colors uppercase tracking-wide"
+                className="w-full bg-transparent border border-white/40 px-4 py-3 text-sm text-white placeholder:text-zinc-800 focus:outline-none focus:border-white transition-colors uppercase tracking-wide"
               />
             </div>
 
-            <div className="flex items-center gap-3 p-4 border border-white/[0.06] bg-zinc-900/20">
-              <input 
-                type="checkbox"
-                name="is_public"
-                id="is_public"
-                checked={formData.is_public}
-                onChange={handleChange}
-                className="w-3.5 h-3.5 border-white/[0.15] bg-transparent text-white focus:ring-0 focus:ring-offset-0 accent-white"
-              />
-              <label htmlFor="is_public" className="text-xs uppercase tracking-widest text-zinc-400 cursor-pointer select-none">
-                Public Gateway (Visible inside public lookup nodes)
-              </label>
+            {/* Field 5: Gateways Checkbox Option */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-center">
+              <div className="hidden md:block" /> {/* Dummy cell for left alignment balancing */}
+              <div className="flex items-center gap-3 p-4 border border-white/40 bg-zinc-900/40">
+                <input 
+                  type="checkbox"
+                  name="is_public"
+                  id="is_public"
+                  checked={formData.is_public}
+                  onChange={handleChange}
+                  className="w-3.5 h-3.5 border-white/40 bg-transparent text-white focus:ring-0 focus:ring-offset-0 accent-zinc-800 cursor-pointer"
+                />
+                <label htmlFor="is_public" className="text-xs uppercase tracking-widest text-zinc-400 cursor-pointer select-none">
+                  Private Room (Only visible to you)
+                </label>
+              </div>
             </div>
 
-            <div className="border-t border-white/[0.06] pt-4" />
+            <div className="border-t border-white/40 pt-4" />
 
-            <button 
-              type="submit"
-              disabled={loading}
-              className="w-full bg-white text-black py-3.5 text-xs uppercase tracking-[0.2em] font-bold hover:bg-black hover:text-white border border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                'Initializing Environment...'
-              ) : (
-                <>Deploy Workspace →</>
-              )}
-            </button>
+            {/* Action Deployment Trigger */}
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-center">
+              <div className="hidden md:block" /> {/* Left gap spacing layout placeholder */}
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-black py-4 text-xs uppercase tracking-[0.2em] font-bold hover:bg-black hover:text-white border border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  'Initializing Environment...'
+                ) : (
+                  <>Deploy Workspace →</>
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </main>

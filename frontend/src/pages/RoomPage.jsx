@@ -7,99 +7,104 @@ function RoomPage() {
   const { roomKey } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(true);
   const [user, setUser] = useState(null);
   const [room, setRoom] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchInitialData = async () => {
+      const delay = new Promise((resolve) => setTimeout(resolve, 1200));
+
       try {
-        const [userRes, roomRes] = await Promise.all([
-          api.get('/auth/me'),
-          api.get(`/rooms/${roomKey}`)
+        const [responses] = await Promise.all([
+          Promise.all([api.get('/auth/me'), api.get(`/rooms/${roomKey}`)]),
+          delay
         ]);
-        setUser(userRes.data);
-        setRoom(roomRes.data);
+
+        if (!isMounted) return;
+
+        setUser(responses[0].data);
+        setRoom(responses[1].data);
+        setLoading(false);
       } catch (error) {
         console.error("Error entering room:", error);
-        navigate('/dashboard');
-      } finally {
-        setLoading(false);
+        if (isMounted) navigate('/dashboard');
       }
     };
 
     fetchInitialData();
 
-    // Joining animation timer
-    const timer = setTimeout(() => {
-      setJoining(false);
-    }, 2500);
-
-    return () => clearTimeout(timer);
+    return () => {
+      isMounted = false;
+    };
   }, [roomKey, navigate]);
 
-  if (loading || joining) {
+  if (loading) {
     return (
-      <div className="h-screen bg-[#080808] flex flex-col items-center justify-center text-white font-mono relative overflow-hidden selection:bg-white selection:text-black">
-        {/* Grid Background */}
+      <div className="h-screen w-screen bg-[#050505] text-zinc-400 font-mono relative overflow-hidden flex flex-col justify-between p-8 md:p-16 select-none">
         <div
-          className="fixed inset-0 pointer-events-none z-0"
+          className="fixed inset-0 pointer-events-none z-0 opacity-40"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px)',
-            backgroundSize: '72px 72px',
+              'linear-gradient(rgba(255,255,255,.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.01) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
           }}
         />
 
-        <div className="relative z-10 w-full max-w-sm border border-white/[0.06] bg-black/40 p-8 text-center">
-          <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-zinc-900 animate-pulse">
-              <span className="text-xl font-bold tracking-tighter">R</span>
-            </div>
+        <header className="relative z-10 flex justify-between items-start border-b border-zinc-900 pb-6">
+          <div>
+            <h1 className="text-white text-xs tracking-[0.4em] uppercase font-bold flex items-center gap-2">
+              <span className="w-2 h-2 bg-white rounded-full animate-ping" />
+              ROOMJAM
+            </h1>
           </div>
-          
-          <div className="space-y-2">
-            <p className="text-[10px] tracking-[0.3em] uppercase text-zinc-600">Initialization Sequence</p>
-            <h2 className="text-lg font-bold tracking-widest uppercase text-white">Joining Workspace</h2>
+        </header>
+
+        <main className="relative z-10 flex-1 grid md:grid-cols-2 gap-12 items-center my-12">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white uppercase select-none">
+                Joining<br />
+                Workspace
+                <span className="text-zinc-600 animate-pulse">...</span>
+              </h2>
+            </div>
             
-            {/* Terminal Style Static Loader Bar */}
-            <div className="w-32 mx-auto pt-2">
-              <div className="h-1 bg-white/[0.08] w-full overflow-hidden relative">
-                <div className="absolute top-0 bottom-0 bg-white w-1/3 animate-[loading_1.5s_infinite_ease-in-out]" 
-                     style={{
-                       animationName: 'loading',
-                       animationDuration: '1.5s',
-                       animationIterationCount: 'infinite',
-                       animationTimingFunction: 'ease-in-out'
-                     }} 
-                />
+            <div className="max-w-xs pt-2">
+              <div className="h-[2px] bg-zinc-900 w-full overflow-hidden relative">
+                <div className="absolute top-0 bottom-0 bg-white w-1/4 animate-[stream_2s_infinite_linear]" />
               </div>
             </div>
           </div>
-          
-          <div className="mt-8 pt-6 border-t border-white/[0.04]">
-            <p className="text-zinc-500 text-xs tracking-[0.25em] uppercase">Target Address</p>
-            <p className="text-white text-sm font-bold tracking-widest mt-1 uppercase">{roomKey}</p>
+
+          <div className="flex flex-col md:items-end justify-center md:text-right border-t md:border-t-0 md:border-l border-zinc-900 pt-8 md:pt-0 md:pl-12 h-full">
+            <span className="text-[10px] tracking-[0.4em] text-zinc-600 uppercase block mb-2">TARGET_WORKSPACE</span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-widest text-white uppercase break-all bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-400 to-zinc-700">
+              {roomKey}
+            </h2>
+            <p className="text-[10px] tracking-[0.2em] text-zinc-500 mt-4 uppercase">Preparing collaborative canvas...</p>
           </div>
-        </div>
+        </main>
 
-        <div className="fixed bottom-12 text-zinc-600 text-[10px] tracking-[0.3em] uppercase z-10">
-          Syncing Environment Core Matrix...
-        </div>
-
-        {/* Global style definition inline injection for minimalist custom ticker width translate */}
         <style>{`
-          @keyframes loading {
-            0% { left: -35%; right: 100%; }
-            50% { left: 100%; right: -35%; }
-            100% { left: -35%; right: 100%; }
+          @keyframes stream {
+            0% { left: -25%; }
+            100% { left: 100%; }
           }
         `}</style>
       </div>
     );
   }
 
-  return <CollaborativeCodeEditor roomKey={roomKey} currentUser={user} roomData={room} />;
+  return (
+    <div className="h-screen w-screen bg-[#0a0a0a] text-white flex flex-col overflow-hidden">
+      <main className="flex-1 w-full relative overflow-hidden bg-black">
+        {/* Pass downstream safely to the feature canvas */}
+        <CollaborativeCodeEditor roomKey={roomKey} currentUser={user} roomData={room} />
+      </main>
+    </div>
+  );
 }
 
-export default RoomPage;
+export default RoomPage;  
