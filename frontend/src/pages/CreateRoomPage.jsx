@@ -184,8 +184,8 @@ const CreateRoomPage = () => {
                   type="checkbox"
                   name="is_public"
                   id="is_public"
-                  checked={formData.is_public}
-                  onChange={handleChange}
+                  checked={!formData.is_public}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_public: !e.target.checked }))}
                   className="w-3.5 h-3.5 border-white/40 bg-transparent text-white focus:ring-0 focus:ring-offset-0 accent-zinc-800 cursor-pointer"
                 />
                 <label htmlFor="is_public" className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 cursor-pointer select-none">

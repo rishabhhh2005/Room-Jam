@@ -3,12 +3,12 @@ import { Excalidraw } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
 import { useWhiteboardSync } from "./useWhiteboardSync";
 
-function CollaborativeWhiteboard({ roomKey }) {
+function CollaborativeWhiteboard({ roomKey, currentUser }) {
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
   const containerRef = useRef(null);
 
   const { handleChange, handlePointerDown, handlePointerUp } =
-    useWhiteboardSync(roomKey, excalidrawAPI);
+    useWhiteboardSync(roomKey, excalidrawAPI, currentUser);
 
   const onMount = useCallback((api) => {
     setExcalidrawAPI(api);

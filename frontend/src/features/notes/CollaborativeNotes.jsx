@@ -2,10 +2,10 @@ import { useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useCollaborativeEditor } from "../editor/useCollaborativeEditor";
 
-function CollaborativeNotes({ roomKey }) {
+function CollaborativeNotes({ roomKey, currentUser }) {
   const [editor, setEditor] = useState(null);
 
-  useCollaborativeEditor(`${roomKey}-notes`, editor);
+  useCollaborativeEditor(`${roomKey}-notes`, editor, currentUser, "Notes");
 
   return (
     <div className="h-full w-full max-w-full min-w-0 bg-zinc-950 flex flex-col">
@@ -19,9 +19,7 @@ function CollaborativeNotes({ roomKey }) {
           </p>
         </div>
 
-        <div className="text-xs text-emerald-400 shrink-0">
-          Live Sync
-        </div>
+        
       </div>
 
       <div className="flex-1 min-h-0 min-w-0 px-3 sm:px-6 lg:px-12 py-3 sm:py-6 lg:py-8">

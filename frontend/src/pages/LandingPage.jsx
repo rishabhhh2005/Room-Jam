@@ -110,7 +110,7 @@ const LandingPage = () => {
       <button onClick={onGetStarted} className="text-xs tracking-widest uppercase bg-white text-black px-6 py-3 font-bold hover:bg-zinc-200 transition-colors">
         Start Building →
       </button>
-      <button onClick={() => navigate('/login')} className="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors px-6 py-3 border border-white/10 hover:border-white/30">
+      <button onClick={() => navigate('/dashboard')} className="text-xs tracking-widest uppercase text-zinc-500 hover:text-white transition-colors px-6 py-3 border border-white/10 hover:border-white/30">
         Live Demo
       </button>
     </div>

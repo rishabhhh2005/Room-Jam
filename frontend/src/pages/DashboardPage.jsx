@@ -178,7 +178,6 @@ const DashboardPage = () => {
                 <p className="text-[11px] uppercase tracking-[0.25em] text-zinc-600">Overview</p>
                 <h2 className="text-lg font-bold uppercase tracking-wider text-white mt-0.5">Recent Workspaces</h2>
               </div>
-              <button className="text-xs uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">View All →</button>
             </div>
             
             {loading ? (

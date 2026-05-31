@@ -6,10 +6,11 @@ import {
 } from "@excalidraw/excalidraw";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
+import { toast } from "sonner";
 
 const SYNC_THROTTLE_MS = 80;
 
-export function useWhiteboardSync(roomKey, excalidrawAPI) {
+export function useWhiteboardSync(roomKey, excalidrawAPI, currentUser) {
   const clientId = useRef(crypto.randomUUID());
   const isApplyingRemote = useRef(false);
   const isPointerDown = useRef(false);
@@ -18,6 +19,7 @@ export function useWhiteboardSync(roomKey, excalidrawAPI) {
   const latestElementsRef = useRef(null);
   const flushTimerRef = useRef(null);
   const lastSentSnapshotRef = useRef("");
+  const lastToastRef = useRef(0);
 
   const applyRemoteElements = useCallback(
     (remoteElements) => {
@@ -72,13 +74,21 @@ export function useWhiteboardSync(roomKey, excalidrawAPI) {
     const ydoc = new Y.Doc();
 
     const provider = new WebsocketProvider(
-      "ws://localhost:1234",
-      `${roomKey}-whiteboard`,
+      import.meta.env.VITE_COLLAB_WS_URL || "ws://localhost:1234",
+      currentUser?.id ? `${roomKey}-whiteboard?userId=${currentUser.id}` : `${roomKey}-whiteboard`,
       ydoc
     );
 
     const sceneMap = ydoc.getMap("scene");
     sceneMapRef.current = sceneMap;
+
+    const toastDebounced = (msg) => {
+      const now = Date.now();
+      if (now - lastToastRef.current > 3000) {
+        toast.info(msg);
+        lastToastRef.current = now;
+      }
+    };
 
     const syncRemoteToCanvas = (event) => {
       if (event?.transaction.origin === clientId.current) return;
@@ -87,6 +97,8 @@ export function useWhiteboardSync(roomKey, excalidrawAPI) {
       const elements = sceneMap.get("elements");
 
       if (!elements) return;
+
+      toastDebounced("Whiteboard updated");
 
       if (isPointerDown.current) {
         pendingRemoteElements.current = elements;
@@ -98,6 +110,20 @@ export function useWhiteboardSync(roomKey, excalidrawAPI) {
 
     sceneMap.observe(syncRemoteToCanvas);
 
+    const handleMessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "kicked") {
+          toast.error(data.message || "You have been removed from this room.");
+          window.location.href = "/dashboard";
+        }
+      } catch (e) {
+        // Not a JSON message
+      }
+    };
+
+    provider.ws.addEventListener("message", handleMessage);
+
     syncRemoteToCanvas();
 
     return () => {
@@ -108,10 +134,11 @@ export function useWhiteboardSync(roomKey, excalidrawAPI) {
 
       sceneMap.unobserve(syncRemoteToCanvas);
       sceneMapRef.current = null;
+      provider.ws.removeEventListener("message", handleMessage);
       provider.destroy();
       ydoc.destroy();
     };
-  }, [roomKey, excalidrawAPI, applyRemoteElements]);
+  }, [roomKey, excalidrawAPI, applyRemoteElements, currentUser?.id]);
 
   const handleChange = useCallback(
     (elements) => {

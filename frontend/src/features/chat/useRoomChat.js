@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 
-export function useRoomChat(roomKey) {
+export function useRoomChat(roomKey, userId) {
   const [messages, setMessages] = useState([]);
 
   const yMessagesRef = useRef(null);
@@ -11,8 +11,8 @@ export function useRoomChat(roomKey) {
     const ydoc = new Y.Doc();
 
     const provider = new WebsocketProvider(
-      "ws://localhost:1234",
-      `${roomKey}-chat`,
+      import.meta.env.VITE_COLLAB_WS_URL || "ws://localhost:1234",
+      userId ? `${roomKey}-chat?userId=${userId}` : `${roomKey}-chat`,
       ydoc
     );
 
@@ -26,15 +26,28 @@ export function useRoomChat(roomKey) {
 
     yMessages.observe(syncMessages);
 
+    const handleMessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "kicked") {
+          window.location.href = "/dashboard";
+        }
+      } catch (e) {
+        // Not a JSON message
+      }
+    };
+
+    provider.ws.addEventListener("message", handleMessage);
+
     syncMessages();
 
     return () => {
       yMessages.unobserve(syncMessages);
-
+      provider.ws.removeEventListener("message", handleMessage);
       provider.destroy();
       ydoc.destroy();
     };
-  }, [roomKey]);
+  }, [roomKey, userId]);
 
   const sendMessage = (message) => {
     if (!yMessagesRef.current) return;

@@ -72,9 +72,15 @@ def join_existing_room(
         return room
 
     except ValueError as e:
+        detail_msg = str(e)
+        if "private" in detail_msg:
+            raise HTTPException(
+                status_code=403,
+                detail=detail_msg,
+            )
         raise HTTPException(
             status_code=404,
-            detail=str(e),
+            detail=detail_msg,
         )
 
 
@@ -90,6 +96,13 @@ def get_room(
         raise HTTPException(
             status_code=404,
             detail="Room not found",
+        )
+
+    # Privacy logic: if not public, only owner can view
+    if not room.is_public and room.owner_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="This room is private and can only be accessed by the owner.",
         )
 
     return room

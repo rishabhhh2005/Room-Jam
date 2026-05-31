@@ -4,7 +4,7 @@ import { useRoomChat } from "./useRoomChat";
 function ChatPanel({ roomKey, currentUser }) {
   const [text, setText] = useState("");
 
-  const { messages, sendMessage } = useRoomChat(roomKey);
+  const { messages, sendMessage } = useRoomChat(roomKey, currentUser?.id);
 
   const bottomRef = useRef(null);
 
@@ -32,7 +32,7 @@ function ChatPanel({ roomKey, currentUser }) {
       {/* Header */}
       <div className="p-4 border-b border-white/[0.06] bg-black/20 min-w-0">
         <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600">
-          // COMMS_CHANNEL
+          // CHAT WITH TEAM
         </h2>
       </div>
 
@@ -81,7 +81,7 @@ function ChatPanel({ roomKey, currentUser }) {
            <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="TYPE_MESSAGE..."
+            placeholder="Type Your Message Here..."
             className="w-full min-w-0 bg-transparent border border-white/10 px-3 py-2.5 text-xs text-white placeholder:text-zinc-800 outline-none focus:border-white/30 transition-colors uppercase"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -93,7 +93,7 @@ function ChatPanel({ roomKey, currentUser }) {
             onClick={handleSend}
             className="w-full min-w-0 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white border border-white transition-all touch-manipulation"
           >
-            Transmit -&gt;
+            SEND -&gt;
           </button>
         </div>
       </div>

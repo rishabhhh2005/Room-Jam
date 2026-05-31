@@ -8,6 +8,8 @@ function RoomWorkspaceLayout({
   setActiveTab,
   roomData,
   children,
+  currentUser,
+  onKick,
 }) {
   const navigate = useNavigate();
   const [sidebarWidth, setSidebarWidth] = useState(300);
@@ -117,12 +119,12 @@ function RoomWorkspaceLayout({
           >
             <MenuIcon />
           </button>
-          <div className="flex items-center gap-2 cursor-pointer min-w-0" onClick={() => navigate('/dashboard')}>
+          <div className="flex items-center gap-2 cursor-pointer min-w-0" >
             <span className="text-xs md:text-sm font-bold tracking-widest uppercase text-white truncate">RoomJam</span>
           </div>
           <div className="h-4 w-px bg-white/[0.08] hidden lg:block" />
           <div className="hidden lg:flex flex-col">
-            <span className="text-[10px] uppercase tracking-widest text-white/40">NODE_ID</span>
+            <span className="text-[10px] uppercase tracking-widest text-white/40">ROOM ID</span>
             <span className="text-xs text-zinc-400 tracking-wider font-bold truncate max-w-40">{roomId}</span>
           </div>
         </div>
@@ -151,7 +153,7 @@ function RoomWorkspaceLayout({
 
         <div className="flex items-center justify-end gap-1 sm:gap-2 md:gap-6 min-w-0">
           <div className="hidden xl:block text-[10px] font-bold text-emerald-400 tracking-widest uppercase border border-emerald-500/20 bg-emerald-500/[0.02] px-2.5 py-1">
-            [SYS_ONLINE]
+            [CONNECTED]
           </div>
 
           <button 
@@ -202,7 +204,7 @@ function RoomWorkspaceLayout({
           {/* Section: Problem Metadata Specs */}
           <div className="p-4 sm:p-6 border-b border-white/[0.06] bg-black/10 min-w-0">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
-              // SPECIFICATION_INDEX
+              // PROBLEM STATEMENT
             </h2>
             <div className="space-y-4 min-w-0">
                <h3 className="font-bold text-white text-md uppercase tracking-wide leading-tight">
@@ -226,30 +228,56 @@ function RoomWorkspaceLayout({
           {/* Section: Peer Nodes Connection Stack */}
           <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
-              // PEER_NODES ({participants.length})
+              // Participants ({participants.length})
             </h2>
 
             <div className="space-y-2">
-              {participants.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default min-w-0"
-                >
-                  <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400">
-                    {user.name ? user.name[0].toUpperCase() : "P"}
+              {participants.map((user) => {
+                const isAdmin = user.id === roomData?.owner_id;
+                const isCurrentUserAdmin = currentUser?.id === roomData?.owner_id;
+                const isMe = user.id === currentUser?.id;
+
+                return (
+                  <div
+                    key={user.id}
+                    className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default min-w-0"
+                  >
+                    <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400 shrink-0">
+                      {user.name ? user.name[0].toUpperCase() : "P"}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">
+                        {user.name || "User"} {isMe && "(YOU)"}
+                      </span>
+                      {isAdmin && (
+                        <span className="text-[8px] font-bold text-emerald-500 tracking-[0.2em] uppercase">
+                          [ADMIN_NODE]
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="ml-auto flex items-center gap-2">
+                      {isCurrentUserAdmin && !isAdmin && (
+                        <button
+                          onClick={() => onKick && onKick(user.id)}
+                          className="px-2 py-0.5 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-black transition-all text-[8px] uppercase font-bold tracking-widest"
+                          title="Kick participant"
+                        >
+                          KICK
+                        </button>
+                      )}
+                      <span className="text-[9px] text-emerald-500/80 font-bold tracking-widest shrink-0">[OK]</span>
+                    </div>
                   </div>
-                  <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">{user.name || "User"}</span>
-                  <span className="ml-auto text-[9px] text-emerald-500/80 font-bold tracking-widest">[OK]</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           
           {/* Environment Status Flag Footer */}
           <div className="p-4 border-t border-white/[0.06] bg-black/20">
              <div className="flex flex-col gap-0.5">
-                <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Environment Pipeline</span>
-                <span className="text-[10px] text-zinc-400 text-ellipsis overflow-hidden whitespace-nowrap uppercase tracking-wider">PROD_ENV // {roomId}</span>
+                <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Roomjam By Rishabh </span>
              </div>
           </div>
 

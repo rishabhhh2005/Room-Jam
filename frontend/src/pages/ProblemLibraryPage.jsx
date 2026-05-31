@@ -75,7 +75,7 @@ const ProblemLibraryPage = () => {
           <button 
            
           >
-            Problem Library
+            RoomJam Problem Library
           </button>
           <button 
             onClick={() => navigate('/dashboard')}
@@ -89,10 +89,10 @@ const ProblemLibraryPage = () => {
       <main className="relative z-10 max-w-6xl mx-auto w-full px-6 pt-28 pb-24">
         {/* Header Section */}
         <div className="mb-14 border border-white/[0.06] bg-black/20 p-8">
-          <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-2">Modules & Presets</p>
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">Choose a Challenge</h1>
+       
+          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">CHOOSE A PROBLEM</h1>
           <p className="text-zinc-500 text-sm max-w-2xl leading-relaxed font-sans">
-            Select a base core architecture or problem statement from the index below to instantly deploy a shared code environment.
+            Select a base core architecture or problem statement from the index below to instantly deploy a Workspace.
           </p>
           
           <div className="mt-8 relative max-w-md">
@@ -116,8 +116,8 @@ const ProblemLibraryPage = () => {
               className="group p-6 border border-white/[0.06] bg-black/10 hover:bg-white/[0.02] hover:border-white/20 transition-all text-left flex flex-col h-full relative"
             >
               <div className="flex items-center justify-between mb-6 w-full">
-                <span className="text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
-                  [{p.id}]
+                <span className="text-[20px] font-mono tracking-widest text-zinc-600 uppercase">
+                  {p.id}
                 </span>
                 <span className={`px-2 py-0.5 border text-[10px] tracking-widest uppercase ${
                   p.difficulty === 'Hard' 
