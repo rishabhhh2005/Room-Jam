@@ -132,12 +132,18 @@ const CreateRoomPage = () => {
 
             {/* Field 2: Problem Statement */}
             <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 items-start">
-              <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400 pt-3">
-                Problem Statement
-              </label>
+              <div className="pt-3">
+                <label className="block text-[11px] uppercase tracking-[0.25em] text-zinc-400">
+                  Problem Statement
+                </label>
+                <p className="text-[9px] text-zinc-600 mt-1 uppercase tracking-widest font-bold">
+                  {formData.problem_statement.length} / 1000 MAX
+                </p>
+              </div>
               <textarea 
                 name="problem_statement"
                 required
+                maxLength={1000}
                 value={formData.problem_statement}
                 onChange={handleChange}
                 rows={5}

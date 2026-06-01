@@ -4,6 +4,7 @@ import RoomPage from "../pages/RoomPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import DashboardPage from "../pages/DashboardPage";
+import WorkspacesPage from "../pages/WorkspacesPage";
 import CreateRoomPage from "../pages/CreateRoomPage";
 import JoinRoomPage from "../pages/JoinRoomPage";
 import ProblemLibraryPage from "../pages/ProblemLibraryPage";
@@ -25,6 +26,12 @@ function AppRoutes(){
       <Route path="/problem-library" element={
         <ProtectedRoute>
           <ProblemLibraryPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/workspaces" element={
+        <ProtectedRoute>
+          <WorkspacesPage />
         </ProtectedRoute>
       } />
       

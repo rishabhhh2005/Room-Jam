@@ -1,21 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { MonacoBinding } from "y-monaco";
-import { createRoomConnection } from "./useYRoom";
 import { toast } from "sonner";
 
-export function useCollaborativeEditor(roomKey, editor, currentUser, type = "Code") {
+export function useCollaborativeEditor(connection, editor, roomKey, activeFileId, type = "Code") {
+  const { ydoc, provider, awareness } = connection;
   const bindingRef = useRef(null);
-  const [awareness, setAwareness] = useState(null);
   const lastToastRef = useRef(0);
 
   useEffect(() => {
-    if (!editor || !roomKey) return;
+    if (!editor || !ydoc || !provider || !awareness || !activeFileId) return;
 
-    const { ydoc, provider, awareness: connAwareness } = createRoomConnection(roomKey, currentUser?.id);
-
-    setAwareness(connAwareness);
-
-    const yText = ydoc.getText("monaco");
+    const yText = ydoc.getText(activeFileId);
 
     const toastDebounced = (msg) => {
       const now = Date.now();
@@ -25,17 +20,31 @@ export function useCollaborativeEditor(roomKey, editor, currentUser, type = "Cod
       }
     };
 
-    yText.observe((event) => {
+    const observer = (event) => {
       if (event.transaction.local) return;
       toastDebounced(`${type} updated`);
-    });
+    };
 
-    bindingRef.current = new MonacoBinding(
-      yText,
-      editor.getModel(),
-      new Set([editor]),
-      connAwareness
-    );
+    yText.observe(observer);
+
+    const model = editor.getModel();
+    if (model) {
+      bindingRef.current = new MonacoBinding(
+        yText,
+        model,
+        new Set([editor]),
+        awareness
+      );
+    }
+
+    return () => {
+      bindingRef.current?.destroy();
+      yText.unobserve(observer);
+    };
+  }, [editor, ydoc, provider, awareness, activeFileId, type]);
+
+  useEffect(() => {
+    if (!provider || !roomKey) return;
 
     // Listen for custom server messages (like kicked or notifications)
     const handleMessage = (event) => {
@@ -54,7 +63,7 @@ export function useCollaborativeEditor(roomKey, editor, currentUser, type = "Cod
 
     const handleKickUser = (event) => {
       const { targetId, roomKey: kickRoomKey } = event.detail;
-      if (kickRoomKey === roomKey) {
+      if (kickRoomKey === roomKey && provider.ws && provider.ws.readyState === WebSocket.OPEN) {
         provider.ws.send(JSON.stringify({ type: "kick", targetId, roomKey }));
       }
     };
@@ -63,13 +72,10 @@ export function useCollaborativeEditor(roomKey, editor, currentUser, type = "Cod
     provider.ws.addEventListener("message", handleMessage);
 
     return () => {
-      bindingRef.current?.destroy();
       window.removeEventListener("kick-user", handleKickUser);
       provider.ws.removeEventListener("message", handleMessage);
-      provider.disconnect();
-      ydoc.destroy();
     };
-  }, [roomKey, editor, currentUser?.id, type]);
+  }, [provider, roomKey]);
 
   return { awareness };
 }

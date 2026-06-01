@@ -10,6 +10,7 @@ function RoomWorkspaceLayout({
   children,
   currentUser,
   onKick,
+  workspaceExplorer,
 }) {
   const navigate = useNavigate();
   const [sidebarWidth, setSidebarWidth] = useState(300);
@@ -17,6 +18,10 @@ function RoomWorkspaceLayout({
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightSidebar, setShowRightSidebar] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    workspace: true,
+    participants: true
+  });
   
   const isResizingLeft = useRef(false);
   const isResizingRight = useRef(false);
@@ -113,6 +118,7 @@ function RoomWorkspaceLayout({
       <header className="min-h-14 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-2 sm:px-4 md:px-6 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1 sm:gap-3 relative z-50 shrink-0 min-w-0">
         <div className="flex items-center gap-1 sm:gap-2 md:gap-4 min-w-0">
           <button 
+            type="button"
             onClick={() => setShowLeftSidebar(!showLeftSidebar)}
             className="lg:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0 touch-manipulation"
             aria-label="Open room details"
@@ -157,6 +163,7 @@ function RoomWorkspaceLayout({
           </div>
 
           <button 
+            type="button"
             onClick={() => setShowRightSidebar(!showRightSidebar)}
             className="lg:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0 touch-manipulation"
             aria-label="Open chat"
@@ -194,6 +201,7 @@ function RoomWorkspaceLayout({
         >
           {isMobile && (
             <button 
+              type="button"
               onClick={() => setShowLeftSidebar(false)}
               className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-white touch-manipulation"
               aria-label="Close room details"
@@ -201,81 +209,126 @@ function RoomWorkspaceLayout({
               <CloseIcon />
             </button>
           )}
-          {/* Section: Problem Metadata Specs */}
-          <div className="p-4 sm:p-6 border-b border-white/[0.06] bg-black/10 min-w-0">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
-              // PROBLEM STATEMENT
-            </h2>
-            <div className="space-y-4 min-w-0">
-               <h3 className="font-bold text-white text-md uppercase tracking-wide leading-tight">
-                 {roomData?.title || 'LOADING...'}
-               </h3>
-               <div className="max-h-40 lg:max-h-none overflow-y-auto pr-2 text-zinc-500 text-xs leading-relaxed whitespace-pre-wrap break-words font-sans">
+
+          {/* Section: Problem Metadata Specs (TOP, ALWAYS EXPANDED) */}
+          <div className="flex flex-col min-h-0 border-b border-white/[0.08] bg-white/[0.02] shrink-0">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.04]">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                // PROBLEM STATEMENT
+              </h2>
+            </div>
+            <div className="p-5 sm:p-7 space-y-5 overflow-y-auto no-scrollbar max-h-[35vh]">
+              <h3 className="font-black text-white text-lg uppercase tracking-tight leading-tight">
+                {roomData?.title || 'LOADING...'}
+              </h3>
+              <div className="text-zinc-300 text-[13px] leading-relaxed whitespace-pre-wrap break-words font-sans selection:bg-emerald-500/30">
                   {roomData?.problem_statement || 'No problem statement provided.'}
-               </div>
-               {roomData?.tags && (
-                 <div className="flex flex-wrap gap-1.5 pt-2">
+              </div>
+              
+              {roomData?.context && (
+                <div className="pt-4 border-t border-white/[0.04]">
+                  <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">
+                    // SYSTEM CONTEXT
+                  </h4>
+                  <div className="text-zinc-400 text-[12px] leading-relaxed whitespace-pre-wrap break-words font-sans selection:bg-emerald-500/30 italic bg-white/[0.01] p-3 border-l-2 border-white/10">
+                    {roomData.context}
+                  </div>
+                </div>
+              )}
+
+              {roomData?.tags && (
+                <div className="flex flex-wrap gap-2 pt-2">
                     {roomData.tags.map(tag => (
-                      <span key={tag} className="text-[9px] text-zinc-400 bg-zinc-900 border border-white/[0.08] px-2 py-0.5 uppercase tracking-wider">
+                      <span key={tag} className="text-[10px] text-zinc-300 bg-white/[0.05] border border-white/[0.1] px-2.5 py-1 uppercase tracking-widest font-bold">
                         {tag}
                       </span>
                     ))}
-                 </div>
-               )}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Section: Peer Nodes Connection Stack */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-4">
-              // Participants ({participants.length})
-            </h2>
-
-            <div className="space-y-2">
-              {participants.map((user) => {
-                const isAdmin = user.id === roomData?.owner_id;
-                const isCurrentUserAdmin = currentUser?.id === roomData?.owner_id;
-                const isMe = user.id === currentUser?.id;
-
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-3 p-3 border border-white/[0.04] bg-black/5 hover:border-white/20 transition-all cursor-default min-w-0"
-                  >
-                    <div className="w-7 h-7 border border-white/10 bg-zinc-900 flex items-center justify-center text-xs font-bold text-zinc-400 shrink-0">
-                      {user.name ? user.name[0].toUpperCase() : "P"}
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs uppercase tracking-wide text-zinc-300 truncate">
-                        {user.name || "User"} {isMe && "(YOU)"}
-                      </span>
-                      {isAdmin && (
-                        <span className="text-[8px] font-bold text-emerald-500 tracking-[0.2em] uppercase">
-                          ADMIN
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="ml-auto flex items-center gap-2">
-                      {isCurrentUserAdmin && !isAdmin && (
-                        <button
-                          onClick={() => onKick && onKick(user.id)}
-                          className="px-2 py-0.5 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-black transition-all text-[8px] uppercase font-bold tracking-widest"
-                          title="Kick participant"
-                        >
-                          KICK
-                        </button>
-                      )}
-                      <span className="text-[9px] text-emerald-500/80 font-bold tracking-widest shrink-0">[OK]</span>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* Section: Workspace (COLLAPSIBLE) */}
+          {workspaceExplorer && (
+            <div className={`flex flex-col min-h-0 border-b border-white/[0.06] ${expandedSections.workspace ? 'flex-[2]' : 'flex-none'}`}>
+              <div 
+                className="flex items-center justify-between p-5 border-b border-white/[0.04] bg-black/20 cursor-pointer hover:bg-white/[0.02] transition-colors shrink-0"
+                onClick={() => setExpandedSections(prev => ({ ...prev, workspace: !prev.workspace }))}
+              >
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                  // WORKSPACE
+                </h2>
+                <ChevronRightIcon open={expandedSections.workspace} />
+              </div>
+              {expandedSections.workspace && (
+                <div className="flex-1 overflow-hidden">
+                  {workspaceExplorer}
+                </div>
+              )}
             </div>
+          )}
+
+          {/* Section: Peer Nodes Connection Stack (COLLAPSIBLE) */}
+          <div className={`flex-1 flex flex-col min-h-0 ${expandedSections.participants ? '' : 'flex-none'}`}>
+            <div 
+              className="flex items-center justify-between p-5 border-b border-white/[0.04] bg-black/10 cursor-pointer hover:bg-white/[0.02] transition-colors shrink-0"
+              onClick={() => setExpandedSections(prev => ({ ...prev, participants: !prev.participants }))}
+            >
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-500">
+                // PARTICIPANTS ({participants.length})
+              </h2>
+              <ChevronRightIcon open={expandedSections.participants} />
+            </div>
+            
+            {expandedSections.participants && (
+              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-3 no-scrollbar">
+                {participants.map((user) => {
+                  const isAdmin = user.id === roomData?.owner_id;
+                  const isCurrentUserAdmin = currentUser?.id === roomData?.owner_id;
+                  const isMe = user.id === currentUser?.id;
+
+                  return (
+                    <div
+                      key={user.id}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-4 p-4 border border-white/[0.05] bg-white/[0.01] hover:border-white/20 transition-all cursor-default min-w-0 group"
+                    >
+                      <div className="w-8 h-8 border border-white/10 bg-zinc-900 flex items-center justify-center text-sm font-bold text-zinc-400 shrink-0 group-hover:border-emerald-500/50 group-hover:text-emerald-400 transition-colors">
+                        {user.name ? user.name[0].toUpperCase() : "P"}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[13px] uppercase tracking-wider text-zinc-200 truncate font-medium">
+                          {user.name || "User"} {isMe && "(YOU)"}
+                        </span>
+                        {isAdmin && (
+                          <span className="text-[9px] font-black text-emerald-500 tracking-[0.25em] uppercase mt-0.5">
+                            ADMIN_NODE
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="ml-auto flex items-center gap-3">
+                        {isCurrentUserAdmin && !isAdmin && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); onKick && onKick(user.id); }}
+                            className="px-2.5 py-1 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-black transition-all text-[9px] uppercase font-bold tracking-[0.2em]"
+                            title="Kick participant"
+                          >
+                            KICK
+                          </button>
+                        )}
+                        <span className="text-[10px] text-emerald-500/80 font-bold tracking-[0.2em] shrink-0">[ONLINE]</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
           
           {/* Environment Status Flag Footer */}
-          <div className="p-4 border-t border-white/[0.06] bg-black/20">
+          <div className="p-4 border-t border-white/[0.06] bg-black/20 shrink-0">
              <div className="flex flex-col gap-0.5">
                 <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Roomjam By Rishabh </span>
              </div>
@@ -320,6 +373,7 @@ function RoomWorkspaceLayout({
                >
                   {isMobile && (
                     <button 
+                      type="button"
                       onClick={() => setShowRightSidebar(false)}
                       className="absolute top-2 left-2 w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-white z-20 touch-manipulation"
                       aria-label="Close chat"
@@ -387,6 +441,12 @@ const FileTextIcon = () => (
 const CloseIcon = () => (
   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+const ChevronRightIcon = ({ open }) => (
+  <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
   </svg>
 );
 

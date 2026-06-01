@@ -58,50 +58,55 @@ const ProblemLibraryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-hidden relative selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#050506] text-zinc-200 font-mono overflow-x-hidden relative selection:bg-white selection:text-black flex flex-col">
       {/* Grid Background */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px)',
+            'linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px)',
           backgroundSize: '72px 72px',
         }}
       />
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <button 
-           
-          >
-            RoomJam Problem Library
-          </button>
+      {/* Re-engineered Premium Navigation */}
+      <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.06] bg-[#050506]/75 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <button 
             onClick={() => navigate('/dashboard')}
-            className="text-xs uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
+            className="text-xs font-black tracking-[0.4em] uppercase text-white hover:text-zinc-400 transition-colors"
           >
-            Back to Dashboard
+            ROOMJAM<span className="hidden sm:inline text-zinc-500 font-normal tracking-widest font-sans ml-2">// Library</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white transition-colors uppercase bg-zinc-900/40 border border-zinc-800/80 px-3 py-1.5 rounded"
+          >
+            ← <span className="hidden xs:inline">Back to </span>Dashboard
           </button>
         </div>
       </nav>
 
-      <main className="relative z-10 max-w-6xl mx-auto w-full px-6 pt-28 pb-24">
-        {/* Header Section */}
-        <div className="mb-14 border border-white/[0.06] bg-black/20 p-8">
-       
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">CHOOSE A PROBLEM</h1>
-          <p className="text-zinc-500 text-sm max-w-2xl leading-relaxed font-sans">
+      {/* Main Container Layout */}
+      <main className="relative z-10 max-w-6xl mx-auto w-full px-6 pt-28 pb-24 flex-1 flex flex-col justify-center md:justify-start">
+        
+        {/* Header Section - Dynamically centered on mobile viewports */}
+        <div className="mb-14 border border-white/[0.06] bg-gradient-to-b from-zinc-900/20 to-zinc-950/5 p-6 md:p-10 rounded-2xl backdrop-blur-md flex flex-col items-center text-center md:items-start md:text-left">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4 uppercase">
+            CHOOSE A PROBLEM
+          </h1>
+          <p className="text-zinc-400 text-xs md:text-sm max-w-2xl leading-relaxed font-sans">
             Select a base core architecture or problem statement from the index below to instantly deploy a Workspace.
           </p>
           
-          <div className="mt-8 relative max-w-md">
+          <div className="mt-8 relative w-full max-w-md">
             <input 
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="SEARCH PROBLEMS OR TAGS..."
-              className="w-full bg-transparent border border-white/[0.08] px-4 py-3 pl-12 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 transition-colors uppercase tracking-wider"
+              className="w-full bg-zinc-950/60 border border-white/[0.08] rounded-xl px-4 py-3 pl-12 text-xs md:text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-colors uppercase tracking-wider"
             />
             <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
           </div>
@@ -113,26 +118,26 @@ const ProblemLibraryPage = () => {
             <button 
               key={p.id}
               onClick={() => handleSelect(p)}
-              className="group p-6 border border-white/[0.06] bg-black/10 hover:bg-white/[0.02] hover:border-white/20 transition-all text-left flex flex-col h-full relative"
+              className="group p-6 border border-white/[0.06] bg-zinc-950/40 hover:bg-zinc-950/90 hover:border-white/20 transition-all rounded-2xl text-left flex flex-col h-full relative shadow-md active:scale-[0.995]"
             >
               <div className="flex items-center justify-between mb-6 w-full">
-                <span className="text-[20px] font-mono tracking-widest text-zinc-600 uppercase">
+                <span className="text-[16px] font-mono font-bold tracking-widest text-zinc-600 uppercase">
                   {p.id}
                 </span>
-                <span className={`px-2 py-0.5 border text-[10px] tracking-widest uppercase ${
+                <span className={`px-2 py-0.5 border rounded text-[9px] font-bold tracking-widest uppercase ${
                   p.difficulty === 'Hard' 
-                    ? 'border-red-500/30 text-red-400 bg-red-500/[0.02]' 
-                    : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/[0.02]'
+                    ? 'border-red-500/30 text-red-400 bg-red-500/[0.04]' 
+                    : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/[0.04]'
                 }`}>
                   {p.difficulty}
                 </span>
               </div>
               
-              <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-wide group-hover:text-zinc-300 transition-colors">
+              <h3 className="text-base font-bold text-white mb-2 uppercase tracking-wide group-hover:text-zinc-300 transition-colors">
                 {p.title}
               </h3>
               
-              <p className="text-xs text-zinc-500 line-clamp-3 mb-6 flex-1 font-sans leading-relaxed">
+              <p className="text-xs text-zinc-400 line-clamp-3 mb-6 flex-1 font-sans leading-relaxed font-normal">
                 {p.problem_statement}
               </p>
               
@@ -140,7 +145,7 @@ const ProblemLibraryPage = () => {
                 {p.tags.map(t => (
                   <span 
                     key={t} 
-                    className="text-[9px] text-zinc-400 border border-white/[0.08] px-2 py-0.5 uppercase tracking-wider bg-zinc-900/40"
+                    className="text-[9px] font-bold text-zinc-400 border border-white/[0.06] px-2 py-0.5 rounded uppercase tracking-wider bg-zinc-900/60"
                   >
                     {t}
                   </span>
@@ -152,7 +157,7 @@ const ProblemLibraryPage = () => {
 
         {/* Empty State Component */}
         {filteredProblems.length === 0 && (
-          <div className="text-center py-24 border border-dashed border-white/[0.08] bg-black/10">
+          <div className="text-center py-24 border border-dashed border-white/[0.08] rounded-2xl bg-zinc-950/20">
             <p className="text-xs tracking-[0.2em] uppercase text-zinc-600">
               Zero query matches. Refine parameter terms.
             </p>
