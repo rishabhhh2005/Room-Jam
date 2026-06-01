@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import api from '../api/axios';
@@ -44,150 +44,108 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 font-mono overflow-y-auto lg:overflow-hidden relative">
+    <div className="min-h-screen bg-black text-zinc-100 antialiased flex flex-col relative overflow-hidden">
+      
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-900 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-zinc-900 rounded-full blur-[120px]" />
+      </div>
 
-      {/* Grid Background */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px)',
-          backgroundSize: '72px 72px',
-        }}
-      />
-
-      {/* Top Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.08] bg-black/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <button
             onClick={() => navigate('/')}
-            className="text-sm font-bold tracking-widest uppercase text-white hover:text-zinc-300 transition-colors"
+            className="text-[11px] font-bold tracking-[0.3em] uppercase text-white"
           >
-            RoomJam
+            ROOMJAM
           </button>
 
           <button
             onClick={() => navigate('/')}
-            className="text-xs uppercase tracking-widest text-zinc-500 hover:text-white transition-colors"
+            className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white transition-colors uppercase"
           >
             Back
           </button>
         </div>
       </nav>
 
-      <main className="relative z-10 min-h-screen flex items-center px-6 pt-24 pb-12 lg:pt-14">
-        <div className="max-w-7xl mx-auto w-full">
-
-          <div className="grid grid-cols-1 lg:grid-cols-[450px_auto_1fr] gap-12 lg:gap-20 items-center">
-
-            {/* LEFT LOGIN */}
-            <div className="order-2 lg:order-1">
-
-              <div className="border border-white/[0.06] bg-black/20">
-                <form
-                  onSubmit={handleSubmit}
-                  className="p-6 space-y-6"
-                >
-
-                  {error && (
-                    <div className="border border-red-500/20 bg-red-500/5 p-4 text-xs text-red-400">
-                      {error}
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block mb-3 text-[11px] uppercase tracking-[0.25em] text-zinc-600">
-                      Email Address
-                    </label>
-
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="name@company.com"
-                      className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="text-[11px] uppercase tracking-[0.25em] text-zinc-600">
-                        Password
-                      </label>
-
-                      <button
-                        type="button"
-                        className="text-[11px] uppercase tracking-widest text-zinc-600 hover:text-white transition-colors"
-                      >
-                        Forgot
-                      </button>
-                    </div>
-
-                    <input
-                      type="password"
-                      name="password"
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className="w-full bg-transparent border border-white/[0.08] px-4 py-3 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/30 transition-colors"
-                    />
-                  </div>
-
-                  <div className="border-t border-white/[0.06]" />
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-white text-black py-3 text-xs uppercase tracking-[0.2em] font-bold hover:bg-black hover:text-white border border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Authenticating...' : 'Sign In →'}
-                  </button>
-
-                </form>
-              </div>
-
-              <div className="mt-8">
-                <p className="text-sm text-zinc-600">
-                  New to RoomJam?{" "}
-                  <Link
-                    to="/register"
-                    className="text-zinc-400 hover:text-white transition-colors"
-                  >
-                    Create an account.
-                  </Link>
-                </p>
-              </div>
-
-            </div>
-
-            {/* CENTER DIVIDER */}
-            <div className="hidden lg:block h-[550px] w-px bg-white/[0.06] order-2" />
-
-            {/* RIGHT HERO */}
-            <div className="order-1 lg:order-3">
-              <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-6 lg:mb-8">
-                Authentication — RoomJam
-              </p>
-
-              <h1 className="text-5xl md:text-7xl xl:text-8xl font-bold leading-[0.95] tracking-tight text-white mb-6 lg:mb-8">
-                Enter
-                <br />
-                <span className="text-zinc-600">
-                   community.
-                </span>
+      <main className="relative z-10 flex-1 flex items-center justify-center px-6">
+        <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-600 uppercase">Authentication</p>
+              <h1 className="text-5xl md:text-6xl font-semibold text-white tracking-tight leading-[1.1]">
+                Welcome back to <span className="text-zinc-500">community.</span>
               </h1>
-
-              <p className="text-base lg:text-lg text-zinc-500 max-w-xl leading-relaxed">
-                Continue collaborating on problems,
-                systems, projects and ideas with your team in real time.
-              </p>
             </div>
-
+            <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
+              Continue collaborating on problems, systems, and ideas with your team in real time.
+            </p>
           </div>
 
+          <div className="premium-card rounded-2xl p-8 md:p-10 max-w-md w-full ml-auto">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="p-4 border border-red-500/20 bg-red-500/5 text-xs text-red-400 rounded-lg">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="name@company.com"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-800"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+                    Password
+                  </label>
+                  <button type="button" className="text-[9px] font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-400">
+                    Forgot?
+                  </button>
+                </div>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-800"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 premium-button-primary rounded-xl text-xs uppercase tracking-[0.2em] font-bold disabled:opacity-50"
+              >
+                {loading ? 'Authenticating...' : 'Sign In →'}
+              </button>
+            </form>
+
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <p className="text-[11px] text-zinc-600">
+                New to RoomJam?{" "}
+                <Link to="/register" className="text-zinc-400 hover:text-white transition-colors font-medium underline underline-offset-4">
+                  Create an account
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </main>
     </div>

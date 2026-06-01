@@ -1,51 +1,90 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/layout/Navbar';
+import api from '../api/axios';
 
 const ProblemLibraryPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get('/auth/me');
+        setUser(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const problems = [
     {
-      id: 'p1',
-      title: 'LRU Cache Implementation',
-      difficulty: 'Medium',
-      problem_statement: 'Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.',
-      context: 'Implement the LRUCache class with get and put methods in O(1) time complexity.',
-      tags: ['Data Structures', 'Hash Map', 'Linked List']
-    },
-    {
-      id: 'p2',
-      title: 'Snake Game Logic',
-      difficulty: 'Medium',
-      problem_statement: 'Implement the core logic for a classic Snake game.',
-      context: 'Focus on grid management, collision detection, and growth mechanics.',
-      tags: ['Games', 'Algorithms', 'Logic']
-    },
-    {
-      id: 'p3',
-      title: 'Rate Limiter Service',
-      difficulty: 'Hard',
-      problem_statement: 'Design a scalable rate limiter for an API gateway.',
-      context: 'Consider Token Bucket or Leaky Bucket algorithms. Must handle distributed traffic.',
-      tags: ['System Design', 'Backend', 'Scalability']
-    },
-    {
-      id: 'p4',
-      title: 'Markdown Parser',
-      difficulty: 'Medium',
-      problem_statement: 'Create a lightweight markdown to HTML parser.',
-      context: 'Support headers, bold, italics, and lists using regex or a custom lexer.',
-      tags: ['Frontend', 'Regex', 'Parsing']
-    },
-    {
-      id: 'p5',
-      title: 'Job Scheduler',
-      difficulty: 'Hard',
-      problem_statement: 'Implement a distributed job scheduler with priority support.',
-      context: 'Jobs should have retry logic and status tracking across multiple workers.',
-      tags: ['Distributed Systems', 'Backend', 'Queue']
-    }
+  id: 'p1',
+  title: 'Slow API Response During Traffic Spikes',
+  difficulty: 'Medium',
+  problem_statement: 'Your company’s customer dashboard becomes extremely slow whenever traffic increases during peak hours.',
+  context: 'Users are reporting 8-10 second response times. Database CPU usage is high and multiple API endpoints perform repeated queries. Propose a solution to improve performance while maintaining data consistency.',
+  tags: ['Backend', 'Performance', 'Databases']
+},
+{
+  id: 'p2',
+  title: 'Real-Time Collaboration Lag',
+  difficulty: 'Hard',
+  problem_statement: 'A collaborative document editing platform experiences synchronization delays when multiple users edit simultaneously.',
+  context: 'Users frequently see conflicting updates and lost changes. Design an architecture that provides near real-time collaboration while minimizing conflicts.',
+  tags: ['System Design', 'WebSockets', 'Realtime']
+},
+{
+  id: 'p3',
+  title: 'API Abuse and Traffic Spikes',
+  difficulty: 'Hard',
+  problem_statement: 'A public API is being overwhelmed by excessive requests from a small group of clients.',
+  context: 'The platform must remain available for legitimate users while preventing abuse. Design a scalable protection strategy.',
+  tags: ['Scalability', 'Security', 'Backend']
+},
+{
+  id: 'p4',
+  title: 'Failed Payment Investigation',
+  difficulty: 'Medium',
+  problem_statement: 'Customers report intermittent payment failures during checkout.',
+  context: 'Failures occur only during high traffic periods. Logs show timeout errors between internal services and the payment provider. Identify possible causes and propose solutions.',
+  tags: ['Microservices', 'Debugging', 'Payments']
+},
+{
+  id: 'p5',
+  title: 'Microservice Communication Strategy',
+  difficulty: 'Hard',
+  problem_statement: 'An engineering team is splitting a monolithic application into microservices.',
+  context: 'Services need to exchange data reliably while remaining loosely coupled. Evaluate synchronous and asynchronous communication approaches and recommend an architecture.',
+  tags: ['System Design', 'Microservices', 'Architecture']
+},
+{
+  id: 'p6',
+  title: 'Production Database Scaling',
+  difficulty: 'Hard',
+  problem_statement: 'A rapidly growing SaaS product is approaching the limits of its primary database.',
+  context: 'Read traffic has increased 10x in six months. Design a scaling strategy while minimizing downtime and preserving data integrity.',
+  tags: ['Databases', 'Scaling', 'Architecture']
+},
+{
+  id: 'p7',
+  title: 'Design an Internal Notification Platform',
+  difficulty: 'Medium',
+  problem_statement: 'Multiple teams need a unified system for sending emails, SMS, and push notifications.',
+  context: 'The platform should support retries, delivery tracking, and future channel expansion.',
+  tags: ['Backend', 'System Design', 'Messaging']
+},
+{
+  id: 'p8',
+  title: 'Incident: Service Outage After Deployment',
+  difficulty: 'Medium',
+  problem_statement: 'A new deployment caused a major outage affecting thousands of users.',
+  context: 'Investigate the incident, identify root causes, and propose improvements to deployment and rollback processes.',
+  tags: ['DevOps', 'Incident Response', 'Reliability']
+}
   ];
 
   const filteredProblems = problems.filter(p => 
@@ -57,95 +96,61 @@ const ProblemLibraryPage = () => {
     navigate('/create-room', { state: { template: problem } });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
-    <div className="min-h-screen bg-[#050506] text-zinc-200 font-mono overflow-x-hidden relative selection:bg-white selection:text-black flex flex-col">
-      {/* Grid Background */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px)',
-          backgroundSize: '72px 72px',
-        }}
-      />
+    <div className="min-h-screen bg-black text-zinc-200 antialiased flex flex-col">
+      <Navbar user={user} onLogout={handleLogout} />
 
-      {/* Re-engineered Premium Navigation */}
-      <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.06] bg-[#050506]/75 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <button 
-            onClick={() => navigate('/dashboard')}
-            className="text-xs font-black tracking-[0.4em] uppercase text-white hover:text-zinc-400 transition-colors"
-          >
-            ROOMJAM<span className="hidden sm:inline text-zinc-500 font-normal tracking-widest font-sans ml-2">// Library</span>
-          </button>
+      <main className="max-w-7xl w-full mx-auto px-6 pt-24 pb-20 flex-1">
+        {/* Header Section with bottom border split */}
+        <header className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-zinc-800 pb-8">
+          <div className="space-y-2">
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Blueprints</p>
+            <h1 className="text-4xl font-bold text-white tracking-tight">Problem Library</h1>
+            <p className="text-sm text-zinc-500">Select a template to provision a new workspace instantly.</p>
+          </div>
           
-          <button 
-            onClick={() => navigate('/dashboard')}
-            className="text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white transition-colors uppercase bg-zinc-900/40 border border-zinc-800/80 px-3 py-1.5 rounded"
-          >
-            ← <span className="hidden xs:inline">Back to </span>Dashboard
-          </button>
-        </div>
-      </nav>
-
-      {/* Main Container Layout */}
-      <main className="relative z-10 max-w-6xl mx-auto w-full px-6 pt-28 pb-24 flex-1 flex flex-col justify-center md:justify-start">
-        
-        {/* Header Section - Dynamically centered on mobile viewports */}
-        <div className="mb-14 border border-white/[0.06] bg-gradient-to-b from-zinc-900/20 to-zinc-950/5 p-6 md:p-10 rounded-2xl backdrop-blur-md flex flex-col items-center text-center md:items-start md:text-left">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4 uppercase">
-            CHOOSE A PROBLEM
-          </h1>
-          <p className="text-zinc-400 text-xs md:text-sm max-w-2xl leading-relaxed font-sans">
-            Select a base core architecture or problem statement from the index below to instantly deploy a Workspace.
-          </p>
-          
-          <div className="mt-8 relative w-full max-w-md">
+          {/* Refined Search Box with Zinc Borders */}
+          <div className="relative w-full md:w-96">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600" />
             <input 
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH PROBLEMS OR TAGS..."
-              className="w-full bg-zinc-950/60 border border-white/[0.08] rounded-xl px-4 py-3 pl-12 text-xs md:text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30 transition-colors uppercase tracking-wider"
+              placeholder="Search templates..."
+              className="w-full bg-zinc-900/40 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-zinc-600 transition-all placeholder:text-zinc-600"
             />
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
           </div>
-        </div>
+        </header>
 
-        {/* Problems Grid Component */}
+        {/* Dynamic Problem Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProblems.map((p) => (
             <button 
               key={p.id}
               onClick={() => handleSelect(p)}
-              className="group p-6 border border-white/[0.06] bg-zinc-950/40 hover:bg-zinc-950/90 hover:border-white/20 transition-all rounded-2xl text-left flex flex-col h-full relative shadow-md active:scale-[0.995]"
+              className="group bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700/80 p-8 rounded-2xl text-left flex flex-col h-full transition-all"
             >
-              <div className="flex items-center justify-between mb-6 w-full">
-                <span className="text-[16px] font-mono font-bold tracking-widest text-zinc-600 uppercase">
-                  {p.id}
-                </span>
-                <span className={`px-2 py-0.5 border rounded text-[9px] font-bold tracking-widest uppercase ${
-                  p.difficulty === 'Hard' 
-                    ? 'border-red-500/30 text-red-400 bg-red-500/[0.04]' 
-                    : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/[0.04]'
-                }`}>
-                  {p.difficulty}
-                </span>
-              </div>
+          
               
-              <h3 className="text-base font-bold text-white mb-2 uppercase tracking-wide group-hover:text-zinc-300 transition-colors">
+              <h3 className="text-lg font-bold text-zinc-300 mb-3 group-hover:text-white transition-colors">
                 {p.title}
               </h3>
               
-              <p className="text-xs text-zinc-400 line-clamp-3 mb-6 flex-1 font-sans leading-relaxed font-normal">
+              <p className="text-sm text-zinc-400 leading-relaxed line-clamp-4 mb-8 flex-1">
                 {p.problem_statement}
               </p>
               
-              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-white/[0.04] w-full">
+              {/* Footer Tags Container */}
+              <div className="flex flex-wrap gap-2 pt-6 border-t border-zinc-800/80 w-full">
                 {p.tags.map(t => (
                   <span 
                     key={t} 
-                    className="text-[9px] font-bold text-zinc-400 border border-white/[0.06] px-2 py-0.5 rounded uppercase tracking-wider bg-zinc-900/60"
+                    className="text-[10px] font-bold text-zinc-400 bg-zinc-800 border border-zinc-700/50 px-2 py-1 rounded-md uppercase tracking-wider"
                   >
                     {t}
                   </span>
@@ -155,11 +160,11 @@ const ProblemLibraryPage = () => {
           ))}
         </div>
 
-        {/* Empty State Component */}
+        {/* Refined Empty Border State */}
         {filteredProblems.length === 0 && (
-          <div className="text-center py-24 border border-dashed border-white/[0.08] rounded-2xl bg-zinc-950/20">
-            <p className="text-xs tracking-[0.2em] uppercase text-zinc-600">
-              Zero query matches. Refine parameter terms.
+          <div className="py-32 border border-dashed border-zinc-800 rounded-3xl flex flex-col items-center justify-center bg-zinc-900/10">
+            <p className="text-xs font-bold text-zinc-600 uppercase tracking-[0.25em]">
+              No matching blueprints found
             </p>
           </div>
         )}

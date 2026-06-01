@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import api from '../api/axios';
+import Navbar from '../components/layout/Navbar';
 
 const WorkspacesPage = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const WorkspacesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [userRes, roomsRes] = await Promise.all([
@@ -18,7 +19,7 @@ const WorkspacesPage = () => {
         api.get('/rooms')
       ]);
       setUser(userRes.data);
-      setRooms(roomsRes.data);
+      setRooms(roomsRes.data || []);
     } catch (error) {
       console.error('Error fetching workspaces:', error);
       if (error.response?.status === 401) {
@@ -28,9 +29,9 @@ const WorkspacesPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
-  useEffect(() => { fetchData(); }, [navigate]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -67,72 +68,39 @@ const WorkspacesPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-300 antialiased font-sans relative selection:bg-white selection:text-black">
-      {/* Grid Background */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.01) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
+    <div className="min-h-screen bg-black text-zinc-200 antialiased flex flex-col">
+      <Navbar user={user} onLogout={handleLogout} />
 
-      <nav className="fixed top-0 inset-x-0 z-50 border-b border-zinc-900 bg-[#080808]/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-xs font-bold font-mono tracking-[0.25em] uppercase text-white hover:text-zinc-400 transition-colors"
-          >
-            RoomJam
-          </button>
-
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="text-xs font-mono text-zinc-500 hover:text-white transition-colors"
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={handleLogout}
-              className="text-xs font-mono text-zinc-500 hover:text-red-400 transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-20">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight uppercase">All Workspaces</h1>
-            <p className="text-sm text-zinc-500 mt-1 font-mono uppercase tracking-widest">
-              Manage your deployed Workspaces ({rooms.length})
-            </p>
+      <main className="max-w-7xl w-full mx-auto px-6 pt-24 pb-20 flex-1">
+        {/* Header Section with bottom border line split */}
+        <header className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-zinc-800 pb-8">
+          <div className="space-y-2">
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Registry</p>
+            <h1 className="text-4xl font-bold text-white tracking-tight">Workspaces</h1>
+            <p className="text-sm text-zinc-500">Manage and deploy your collaborative environments.</p>
           </div>
           
-          <div className="relative w-full md:w-80">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+          {/* Filter Input Frame */}
+          <div className="relative w-full md:w-96">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600" />
             <input 
               type="text"
-              placeholder="SEARCH WORKSPACES..."
+              placeholder="Filter by name, key or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900/50 border border-zinc-800 rounded-md py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-white transition-all font-mono uppercase tracking-wider"
+              className="w-full bg-zinc-900/40 border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-zinc-600 transition-all placeholder:text-zinc-600"
             />
           </div>
-        </div>
+        </header>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-40 bg-zinc-900/50 animate-pulse rounded-lg border border-zinc-800" />
+              <div key={i} className="h-56 bg-zinc-900/30 animate-pulse rounded-2xl border border-zinc-800" />
             ))}
           </div>
         ) : filteredRooms.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredRooms.map((room) => (
               <WorkspaceCard
                 key={room.room_key}
@@ -143,9 +111,10 @@ const WorkspacesPage = () => {
             ))}
           </div>
         ) : (
-          <div className="py-20 text-center border border-dashed border-zinc-800 rounded-lg bg-zinc-900/5">
-            <p className="text-sm text-zinc-500 font-mono uppercase tracking-widest">
-              {searchQuery ? `No workspaces matching "${searchQuery}"` : "No workspaces found"}
+          /* Empty Border State */
+          <div className="py-32 border border-dashed border-zinc-800 rounded-3xl flex flex-col items-center justify-center bg-zinc-900/10">
+            <p className="text-xs font-bold text-zinc-600 uppercase tracking-[0.25em]">
+              {searchQuery ? `No results for "${searchQuery}"` : "Start By Creating Your First Workspace"}
             </p>
           </div>
         )}
@@ -157,49 +126,49 @@ const WorkspacesPage = () => {
 const WorkspaceCard = ({ room, onClick, onDelete }) => (
   <div
     onClick={onClick}
-    className="group flex flex-col p-5 border border-zinc-900 bg-zinc-900/10 hover:bg-zinc-900/30 hover:border-zinc-700 transition-all rounded-lg cursor-pointer relative min-h-[160px]"
+    className="group bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700/80 p-8 rounded-2xl cursor-pointer flex flex-col h-full transition-all"
   >
-    <div className="flex items-start justify-between gap-4 mb-3">
-      <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-white group-hover:text-emerald-400 transition-colors truncate uppercase tracking-tight">
+    <div className="flex items-start justify-between mb-6">
+      <div className="min-w-0 space-y-1.5">
+        <h3 className="text-lg font-bold text-zinc-300 group-hover:text-white transition-colors truncate">
           {room.title}
         </h3>
-        <p className="text-[10px] font-mono text-zinc-600 tracking-wider mt-0.5 uppercase">
+        <p className="text-[11px] font-mono font-bold text-zinc-600 tracking-[0.15em] uppercase">
           {room.room_key}
         </p>
       </div>
-      <div className={`w-2 h-2 rounded-full mt-1.5 ${room.is_public ? 'bg-sky-500/40 shadow-[0_0_8px_rgba(14,165,233,0.3)]' : 'bg-purple-500/40 shadow-[0_0_8px_rgba(168,85,247,0.3)]'}`} />
+      <div className={`w-2.5 h-2.5 rounded-full shrink-0 mt-2 ${room.is_public ? 'bg-sky-500' : 'bg-purple-500'} opacity-80`} />
     </div>
 
-    <p className="text-xs text-zinc-500 line-clamp-3 leading-relaxed mb-4 flex-1 font-normal">
-      {room.problem_statement || 'No environment loaded.'}
+    <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3 mb-8 flex-1">
+      {room.problem_statement || 'Standard collaborative workspace.'}
     </p>
 
-    <div className="flex items-center justify-between mt-auto pt-3 border-t border-zinc-900/50">
-      <div className="flex flex-wrap gap-1.5 min-w-0">
+    <div className="flex items-center justify-between pt-6 border-t border-zinc-800/80">
+      <div className="flex flex-wrap gap-2 overflow-hidden">
         {room.tags?.slice(0, 2).map(tag => (
-          <span key={tag} className="text-[9px] font-mono text-zinc-500 border border-zinc-800 px-1.5 py-0.5 rounded uppercase">
+          <span key={tag} className="text-[10px] font-bold text-zinc-400 bg-zinc-800 border border-zinc-700/50 px-2 py-1 rounded-md uppercase tracking-wider">
             {tag}
           </span>
         ))}
         {room.tags?.length > 2 && (
-          <span className="text-[9px] font-mono text-zinc-600 px-1 py-0.5">+{room.tags.length - 2}</span>
+          <span className="text-xs text-zinc-500 font-bold ml-1">+{room.tags.length - 2}</span>
         )}
       </div>
       
       <button
         onClick={onDelete}
-        className="p-1.5 text-zinc-700 hover:text-red-500 transition-colors"
+        className="p-2 text-zinc-600 hover:text-red-400 transition-colors"
         title="Delete Workspace"
       >
-        <TrashIcon className="w-4 h-4" />
+        <TrashIcon className="w-5 h-5" />
       </button>
     </div>
   </div>
 );
 
 const SearchIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
   </svg>
 );

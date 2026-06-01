@@ -1,20 +1,110 @@
 @import "tailwindcss";
 
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --accent: #111111;
+  --border: rgba(255, 255, 255, 0.08);
+  --muted: #a1a1aa;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
   min-width: 0;
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
+  background-color: var(--background);
+  font-size: 16px; /* Base size */
 }
 
 body {
+  color: var(--foreground);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.premium-card {
   background: #0a0a0a;
-  color: white;
-  font-family: Inter, sans-serif;
-  width: 100%;
-  max-width: 100%;
-  overscroll-behavior: none;
+  border: 1px solid var(--border);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #0f0f0f;
+  transform: translateY(-1px);
+}
+
+.premium-button-primary {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  font-size: 0.8125rem; /* ~13px */
+  transition: all 0.2s ease;
+}
+
+.premium-button-primary:hover {
+  background: #e5e5e5;
+  transform: translateY(-1px);
+}
+
+.premium-button-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.8125rem; /* ~13px */
+  transition: all 0.2s ease;
+}
+
+.premium-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Typography Helpers */
+.text-premium-label {
+  font-size: 0.75rem; /* 12px */
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.text-premium-body {
+  font-size: 0.875rem; /* 14px */
+  color: #d4d4d8;
+  line-height: 1.6;
+}
+
+.text-premium-title {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #ffffff;
 }
