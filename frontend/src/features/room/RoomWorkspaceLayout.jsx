@@ -251,7 +251,7 @@ function RoomWorkspaceLayout({
                       </span>
                       {isAdmin && (
                         <span className="text-[8px] font-bold text-emerald-500 tracking-[0.2em] uppercase">
-                          [ADMIN_NODE]
+                          ADMIN
                         </span>
                       )}
                     </div>

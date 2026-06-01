@@ -99,7 +99,7 @@ const CreateRoomPage = () => {
             onClick={() => navigate('/dashboard')}
             className="text-xs uppercase tracking-widest text-zinc-500 hover:text-white inline-flex items-center gap-2 mb-6 transition-colors"
           >
-            <ArrowLeftIcon className="w-3.5 h-3.5" /> Back to Terminal
+            <ArrowLeftIcon className="w-3.5 h-3.5" /> Back to DashBoard
           </button>
           <p className="text-xs tracking-[0.3em] uppercase text-zinc-600 mb-2">Workspace Initialization</p>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white uppercase">Create Room</h1>
